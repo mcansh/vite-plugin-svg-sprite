@@ -5,7 +5,7 @@ import jsonfile from "jsonfile";
 import chalk from "chalk";
 import Confirm from "prompt-confirm";
 
-let packages = ["remix-fastify"];
+let packages = ["vite-svg-sprite-plugin"];
 
 let rootDir = path.join(import.meta.dirname, "..");
 
@@ -29,7 +29,7 @@ async function run(args) {
   ensureCleanWorkingDirectory();
 
   // Get the next version number
-  let currentVersion = await getPackageVersion("remix-fastify");
+  let currentVersion = await getPackageVersion("vite-svg-sprite-plugin");
   let nextVersion = semver.valid(givenVersion);
   if (nextVersion == null) {
     nextVersion = getNextVersion(currentVersion, givenVersion, prereleaseId);

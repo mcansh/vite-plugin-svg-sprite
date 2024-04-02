@@ -21,7 +21,7 @@ concurrency:
 jobs:
   release:
     name: 🦋 Changesets Release
-    if: github.repository == 'mcansh/remix-fastify'
+    if: github.repository == 'mcansh/vite-svg-sprite-plugin'
     runs-on: ubuntu-latest
     outputs:
       published: ${{ steps.changesets.outputs.published }}
@@ -67,7 +67,7 @@ jobs:
 
   comment:
     name: 📝 Comment on issues and pull requests
-    if: github.repository == 'mcansh/remix-fastify' && needs.release.outputs.published == 'true'
+    if: github.repository == 'mcansh/vite-svg-sprite-plugin' && needs.release.outputs.published == 'true'
     needs: [release]
     runs-on: ubuntu-latest
     steps:
@@ -80,4 +80,4 @@ jobs:
         uses: remix-run/release-comment-action@v0.4.1
         with:
           DIRECTORY_TO_CHECK: "./packages"
-          PACKAGE_NAME: "@mcansh/remix-fastify"
+          PACKAGE_NAME: "@mcansh/vite-svg-sprite-plugin"
