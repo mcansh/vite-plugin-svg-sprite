@@ -9,6 +9,7 @@
   "dependencies": {
     "@changesets/cli": "^2.27.1",
     "@manypkg/get-packages": "^2.2.1",
+    "@npmcli/package-json": "^5.0.0",
     "@types/node": "^20.12.2",
     "prompt-confirm": "^2.0.4",
     "semver": "^7.6.0",
