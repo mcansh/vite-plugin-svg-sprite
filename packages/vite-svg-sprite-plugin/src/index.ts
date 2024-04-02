@@ -13,16 +13,19 @@ type Options = {
   symbolId?: string;
 };
 
-let defaultOptions: Required<Options> = {
-  spriteOutputName: "sprite-[hash].svg",
-  symbolId: "icon-[name]-[hash]",
-};
-
 let spriteHash: string;
 let url: string;
 
 export function createSvgSpritePlugin(options?: Options): Array<Plugin> {
   let config: ResolvedConfig;
+
+  let defaultOptions: Required<Options> = {
+    spriteOutputName:
+      process.env.NODE_ENV === "development"
+        ? "sprite.svg"
+        : "sprite-[hash].svg",
+    symbolId: "icon-[name]-[hash]",
+  };
 
   let { spriteOutputName, symbolId: symbolIdPattern } = {
     ...defaultOptions,
@@ -48,7 +51,7 @@ export function createSvgSpritePlugin(options?: Options): Array<Plugin> {
           if (symbolIdPattern.includes("[name]")) {
             symbolId = symbolId.replace("[name]", basename);
           }
-          if (symbolId.includes("[hash]")) {
+          if (symbolIdPattern.includes("[hash]")) {
             let hash = createHash(content);
             symbolId = symbolId.replace("[hash]", hash);
           }
@@ -70,10 +73,10 @@ export function createSvgSpritePlugin(options?: Options): Array<Plugin> {
         let { assetsDir, outDir } = config.build;
         let sprite = store.toString();
         let hash = createHash(sprite);
-        spriteOutputName = spriteOutputName.replace("[hash]", hash);
-        let spritePath = path.join(outDir, assetsDir, spriteOutputName);
+        let spriteFilename = spriteOutputName.replace("[hash]", hash);
+        let spritePath = path.join(outDir, assetsDir, spriteFilename);
         spriteHash = hash;
-        url = `/${assetsDir}/${spriteOutputName}`;
+        url = `/${assetsDir}/${spriteFilename}`;
         await fse.outputFile(spritePath, sprite);
       },
 
