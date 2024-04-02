@@ -1,5 +1,12 @@
 # @mcansh/vite-svg-sprite-plugin
 
+## 0.1.5
+
+### Patch Changes
+
+- 53d9e7e: dont add icon to sprite multiple times
+- e26739e: hash emitted svg during build
+
 ## 0.1.4
 
 ### Patch Changes
