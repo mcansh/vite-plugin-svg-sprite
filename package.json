@@ -3,7 +3,7 @@
   "scripts": {
     "build": "pnpm run --recursive build",
     "changeset": "changeset",
-    "changeset:version": "changeset version && node ./scripts/remove-prerelease-changelogs.js && pnpm install --lockfile-only && node ./scripts/post-changeset.js",
+    "changeset:version": "changeset version && node ./scripts/remove-prerelease-changelogs.js && pnpm install --lockfile-only",
     "changeset:release": "pnpm run build && changeset publish"
   },
   "dependencies": {
