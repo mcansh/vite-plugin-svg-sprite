@@ -22,6 +22,7 @@
     }
   },
   "scripts": {
+    "dev": "tsc --watch",
     "build": "tsc"
   },
   "author": "Logan McAnsh <logan@mcan.sh> (https://mcan.sh)",
