@@ -4,7 +4,7 @@
     "dev": "pnpm run --filter vite-svg-sprite-plugin --filter vite-remix --recursive --parallel dev",
     "build": "pnpm run --recursive build",
     "changeset": "changeset",
-    "changeset:version": "changeset version && node ./scripts/remove-prerelease-changelogs.js && pnpm install --lockfile-only",
+    "changeset:version": "changeset version && node ./scripts/remove-prerelease-changelogs.js && pnpm install --lockfile-only && node ./scripts/post-changeset.js",
     "changeset:release": "pnpm run build && changeset publish"
   },
   "dependencies": {
@@ -12,6 +12,8 @@
     "@manypkg/get-packages": "^2.2.1",
     "@npmcli/package-json": "^5.0.0",
     "@types/node": "^20.12.2",
+    "@types/npmcli__package-json": "^4.0.4",
+    "glob": "^10.3.12",
     "prompt-confirm": "^2.0.4",
     "semver": "^7.6.0",
     "typescript": "^5.4.3"
