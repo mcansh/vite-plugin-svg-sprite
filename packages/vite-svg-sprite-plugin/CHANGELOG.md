@@ -1,5 +1,12 @@
 # @mcansh/vite-svg-sprite-plugin
 
+## 0.1.6
+
+### Patch Changes
+
+- 847d7f5: hash emitted svg during build
+- 26407a9: emitted file name fix
+
 ## 0.1.5
 
 ### Patch Changes
