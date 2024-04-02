@@ -20,6 +20,9 @@ importers:
       '@types/node':
         specifier: ^20.12.2
         version: 20.12.2
+      glob:
+        specifier: ^10.3.12
+        version: 10.3.12
       prompt-confirm:
         specifier: ^2.0.4
         version: 2.0.4

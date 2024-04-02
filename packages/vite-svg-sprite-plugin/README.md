@@ -26,7 +26,7 @@ you can configure the generated sprite file name as well as the generated symbol
 ```ts
 // these are the default options
 createSvgSpritePlugin({
-  spriteOutputName: "sprite.svg",
+  spriteOutputName: "sprite-[hash].svg",
   symbolId: "icon-[name]-[hash]",
 });
 ```
