@@ -42,15 +42,14 @@ export function createSvgSpritePlugin(options?: Options): Plugin {
           .update(content)
           .digest("hex");
 
-        let symbolId: string;
+        let symbolId: string = symbolIdPattern;
         if (symbolIdPattern) {
           if (symbolIdPattern.includes("[name]")) {
-            symbolIdPattern = symbolIdPattern.replace("[name]", basename);
+            symbolId = symbolId.replace("[name]", basename);
           }
-          if (symbolIdPattern.includes("[hash]")) {
-            symbolIdPattern = symbolIdPattern.replace("[hash]", hash);
+          if (symbolId.includes("[hash]")) {
+            symbolId = symbolId.replace("[hash]", hash);
           }
-          symbolId = symbolIdPattern;
         } else {
           symbolId = `icon-${basename}-${hash}`;
         }
