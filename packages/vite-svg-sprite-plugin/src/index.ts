@@ -57,7 +57,7 @@ export function createSvgSpritePlugin(options?: Options): Plugin {
         // only add the icon if it hasn't been added before
         if (!icons.has(symbolId)) {
           store.add(symbolId, content);
-          icons.add(id);
+          icons.add(symbolId);
         }
 
         return {
