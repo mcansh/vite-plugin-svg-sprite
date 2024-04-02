@@ -8,10 +8,6 @@ importers:
 
   .:
     dependencies:
-      typescript:
-        specifier: ^5.4.3
-        version: 5.4.3
-    devDependencies:
       '@changesets/cli':
         specifier: ^2.27.1
         version: 2.27.1
@@ -27,6 +23,9 @@ importers:
       semver:
         specifier: ^7.6.0
         version: 7.6.0
+      typescript:
+        specifier: ^5.4.3
+        version: 5.4.3
 
   packages/vite-svg-sprite-plugin:
     dependencies:
