@@ -1,0 +1,46 @@
+{
+  "name": "@mcansh/vite-svg-sprite-plugin",
+  "version": "0.1.1",
+  "type": "module",
+  "repository": "mcansh/vite-svg-sprite-plugin",
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/mcansh"
+    }
+  ],
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "Logan McAnsh <logan@mcan.sh> (https://mcan.sh)",
+  "license": "MIT",
+  "dependencies": {
+    "svgstore": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "vite": "^5.2.7"
+  },
+  "peerDependencies": {
+    "vite": "^5.2.7"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

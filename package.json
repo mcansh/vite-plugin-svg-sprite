@@ -1,37 +1,17 @@
 {
-  "name": "@mcansh/vite-svg-sprite-plugin",
-  "version": "0.1.1",
-  "type": "module",
-  "files": [
-    "dist",
-    "package.json"
-  ],
-  "exports": {
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
-  },
   "scripts": {
-    "build": "tsc"
+    "build": "pnpm run --recursive build",
+    "changeset": "changeset",
+    "changeset:version": "changeset version && node ./scripts/remove-prerelease-changelogs.js && pnpm install --lockfile-only && node ./scripts/post-changeset.js",
+    "changeset:release": "pnpm run build && changeset publish"
   },
-  "author": "Logan McAnsh <logan@mcan.sh> (https://mcan.sh)",
-  "license": "MIT",
-  "packageManager": "pnpm@9.0.0-beta.2+sha256.013b34133be0fd7f97d8739bd1a64a2b2c4b15af936ef77a14f5db26efb6bef4",
   "dependencies": {
-    "svgstore": "^3.0.1"
-  },
-  "devDependencies": {
-    "@types/fs-extra": "^11.0.4",
+    "@changesets/cli": "^2.27.1",
+    "@manypkg/get-packages": "^2.2.1",
     "@types/node": "^20.12.2",
-    "typescript": "^5.4.3",
-    "vite": "^5.2.7"
+    "prompt-confirm": "^2.0.4",
+    "semver": "^7.6.0",
+    "typescript": "^5.4.3"
   },
-  "peerDependencies": {
-    "vite": "^5.2.7"
-  },
-  "publishConfig": {
-    "access": "public"
-  }
+  "packageManager": "pnpm@9.0.0-beta.2+sha256.013b34133be0fd7f97d8739bd1a64a2b2c4b15af936ef77a14f5db26efb6bef4"
 }
