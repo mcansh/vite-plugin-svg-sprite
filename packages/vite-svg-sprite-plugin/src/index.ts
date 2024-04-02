@@ -19,6 +19,7 @@ let defaultOptions: Required<Options> = {
 
 export function createSvgSpritePlugin(options?: Options): Plugin {
   let config: ResolvedConfig;
+  let url: string;
 
   let { spriteOutputName, symbolId: symbolIdPattern } = {
     ...defaultOptions,
@@ -30,6 +31,8 @@ export function createSvgSpritePlugin(options?: Options): Plugin {
 
     configResolved(resolvedConfig) {
       config = resolvedConfig;
+      let { assetsDir } = config.build;
+      url = `/${assetsDir}/${spriteOutputName}`;
     },
 
     async transform(_code, id) {
@@ -57,7 +60,7 @@ export function createSvgSpritePlugin(options?: Options): Plugin {
         store.add(symbolId, content);
 
         return {
-          code: `export default "/${config.build.assetsDir}/${spriteOutputName}#${symbolId}";`,
+          code: `export default "${url}#${symbolId}";`,
           map: null,
         };
       }
@@ -72,7 +75,7 @@ export function createSvgSpritePlugin(options?: Options): Plugin {
 
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        if (req.url === `/assets/${spriteOutputName}`) {
+        if (req.url === url) {
           res.setHeader("Content-Type", "image/svg+xml");
           res.end(store.toString());
         } else {

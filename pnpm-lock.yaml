@@ -40,8 +40,8 @@ importers:
         version: 18.2.0(react@18.2.0)
     devDependencies:
       '@mcansh/vite-svg-sprite-plugin':
-        specifier: ^0.1.2
-        version: 0.1.2(vite@5.2.7(@types/node@20.12.2))
+        specifier: workspace:*
+        version: link:../../packages/vite-svg-sprite-plugin
       '@radix-ui/icons':
         specifier: https://gitpkg.now.sh/radix-ui/icons/packages/radix-icons?master
         version: '@radix-ui/react-icons@https://gitpkg.now.sh/radix-ui/icons/packages/radix-icons?master(react@18.2.0)'
@@ -708,12 +708,6 @@ packages:
   '@manypkg/tools@1.1.0':
     resolution: {integrity: sha512-SkAyKAByB9l93Slyg8AUHGuM2kjvWioUTCckT/03J09jYnfEzMO/wSXmEhnKGYs6qx9De8TH4yJCl0Y9lRgnyQ==}
     engines: {node: '>=14.18.0'}
-
-  '@mcansh/vite-svg-sprite-plugin@0.1.2':
-    resolution: {integrity: sha512-DHdhfYauwL6qs6rNoPnTKP9aXWVI/ptDMV5LES6zwAEvKUVVFbf3iiWyOTVExjVQ9q6xGumdHL4NTyNaaygQ3w==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      vite: ^5.2.7
 
   '@mdx-js/mdx@2.3.0':
     resolution: {integrity: sha512-jLuwRlz8DQfQNiUCJR50Y09CGPq3fLtmtUQfVrj79E0JWu3dvsVcxVIcfhR5h0iXu+/z++zDrYeiJqifRynJkA==}
@@ -4959,11 +4953,6 @@ snapshots:
       globby: 11.1.0
       jju: 1.4.0
       read-yaml-file: 1.1.0
-
-  '@mcansh/vite-svg-sprite-plugin@0.1.2(vite@5.2.7(@types/node@20.12.2))':
-    dependencies:
-      svgstore: 3.0.1
-      vite: 5.2.7(@types/node@20.12.2)
 
   '@mdx-js/mdx@2.3.0':
     dependencies:
