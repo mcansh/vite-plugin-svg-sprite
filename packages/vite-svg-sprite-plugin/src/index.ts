@@ -7,17 +7,26 @@ import { ResolvedConfig, Plugin } from "vite";
 let svgRegex = /\.svg$/;
 let store = svgstore();
 
-export function createSvgSpritePlugin({
-  spriteOutputName = "sprite.svg",
-  symbolId: symbolIdPattern,
-}: {
+type Options = {
   spriteOutputName?: string;
   symbolId?: string;
-} = {}): Plugin {
+};
+
+let defaultOptions: Required<Options> = {
+  spriteOutputName: "sprite.svg",
+  symbolId: "icon-[name]-[hash]",
+};
+
+export function createSvgSpritePlugin(options?: Options): Plugin {
   let config: ResolvedConfig;
 
+  let { spriteOutputName, symbolId: symbolIdPattern } = {
+    ...defaultOptions,
+    ...options,
+  };
+
   return {
-    name: "create-sprite-from-imported-svgs",
+    name: "create-svg-sprite-plugin",
 
     configResolved(resolvedConfig) {
       config = resolvedConfig;
