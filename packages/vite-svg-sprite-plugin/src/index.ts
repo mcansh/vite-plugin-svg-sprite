@@ -26,7 +26,6 @@ export function createSvgSpritePlugin({
     async transform(_code, id) {
       if (svgRegex.test(id)) {
         let basename = path.basename(id, ".svg");
-        if (basename === "sprite") return null;
         let content = await fse.readFile(id, "utf-8");
 
         let hash = crypto
