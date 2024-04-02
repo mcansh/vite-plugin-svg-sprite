@@ -1,0 +1,10 @@
+{
+  "mode": "pre",
+  "tag": "pre",
+  "initialVersions": {
+    "@mcansh/vite-svg-sprite-plugin": "0.1.1"
+  },
+  "changesets": [
+    "giant-cats-dream"
+  ]
+}
