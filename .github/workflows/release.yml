@@ -41,6 +41,7 @@ jobs:
           run_install: |
             - recursive: true
               args: [--frozen-lockfile, --strict-peer-dependencies]
+              cwd: ./
 
       - name: 🔐 Setup npm auth
         run: |
