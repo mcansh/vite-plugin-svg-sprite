@@ -27,6 +27,7 @@
   "author": "Logan McAnsh <logan@mcan.sh> (https://mcan.sh)",
   "license": "MIT",
   "dependencies": {
+    "fs-extra": "^11.2.0",
     "svgstore": "^3.0.1"
   },
   "devDependencies": {
