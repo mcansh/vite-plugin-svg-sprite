@@ -8,6 +8,8 @@ import svgo from "svgo";
 
 let svgRegex = /\.svg$/;
 let PLUGIN_NAME = "vite-svg-sprite-plugin";
+let virtualModuleId = `virtual:${PLUGIN_NAME}`;
+let resolvedVirtualModuleId = "\0" + virtualModuleId;
 
 type Config = {
   spriteOutputName?: string;
@@ -34,6 +36,21 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
 
       configResolved(resolvedConfig) {
         config = resolvedConfig;
+      },
+
+      resolveId(id) {
+        if (id === virtualModuleId) {
+          return resolvedVirtualModuleId;
+        }
+      },
+      async load(id) {
+        if (id === resolvedVirtualModuleId) {
+          let url = `/${config.build.assetsDir}/${options.spriteOutputName}`;
+          let sprite = store.toString();
+          let { spriteHash } = await getSpriteHash(sprite);
+          url = url.replace("[hash]", spriteHash);
+          return `export default "${url}";`;
+        }
       },
 
       config(userConfig) {
@@ -104,10 +121,8 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
       configureServer(server) {
         server.middlewares.use(async (req, res, next) => {
           let url = `/${config.build.assetsDir}/${options.spriteOutputName}`;
-
           let sprite = store.toString();
           let { spriteHash, data } = await getSpriteHash(sprite);
-
           url = url.replace("[hash]", spriteHash);
           console.log({ url });
           if (req.url === url) {
