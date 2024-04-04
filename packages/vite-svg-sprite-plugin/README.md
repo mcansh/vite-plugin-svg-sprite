@@ -36,7 +36,11 @@ createSvgSpritePlugin({
 ```tsx
 import linkIconHref from "@primer/octicons/build/svg/link-16.svg";
 
-<svg className="size-4" aria-hidden>
-  <use href={linkIconHref} />
-</svg>;
+function Component() {
+  return (
+    <svg className="size-4" aria-hidden>
+      <use href={linkIconHref} />
+    </svg>
+  );
+}
 ```

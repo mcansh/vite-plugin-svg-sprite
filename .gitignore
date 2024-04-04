@@ -1,4 +1,3 @@
-dist
 .ds_store
 node_modules
 tsconfig.tsbuildinfo

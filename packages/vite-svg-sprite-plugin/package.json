@@ -16,6 +16,9 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./client.d.ts": {
+      "types": "./dist/client.d.ts"
     }
   },
   "main": "dist/index.js",
@@ -33,6 +36,7 @@
   "dependencies": {
     "fs-extra": "^11.2.0",
     "hasha": "^6.0.0",
+    "svgo": "^3.2.0",
     "svgstore": "^3.0.1"
   },
   "devDependencies": {
