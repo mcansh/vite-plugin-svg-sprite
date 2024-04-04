@@ -40,8 +40,9 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
         return {
           build: {
             assetsInlineLimit(filePath, content) {
+              // don't inline svg files
               if (svgRegex.test(filePath)) {
-                return false;
+                return true;
               }
 
               if (typeof userConfig.build?.assetsInlineLimit === "function") {
