@@ -5,7 +5,8 @@
     "build": "pnpm run --recursive build",
     "changeset": "changeset",
     "changeset:version": "changeset version && node ./scripts/remove-prerelease-changelogs.js && pnpm install --lockfile-only && node ./scripts/post-changeset.js",
-    "changeset:release": "pnpm run build && changeset publish"
+    "changeset:release": "pnpm run build && changeset publish",
+    "publish": "./scripts/publish.js"
   },
   "dependencies": {
     "@changesets/cli": "^2.27.1",
@@ -13,7 +14,9 @@
     "@npmcli/package-json": "^5.0.0",
     "@types/node": "^20.12.2",
     "@types/npmcli__package-json": "^4.0.4",
+    "chalk": "^5.3.0",
     "glob": "^10.3.12",
+    "jsonfile": "^6.1.0",
     "prompt-confirm": "^2.0.4",
     "semver": "^7.6.0",
     "typescript": "^5.4.3"

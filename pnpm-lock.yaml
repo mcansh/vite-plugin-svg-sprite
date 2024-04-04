@@ -23,9 +23,15 @@ importers:
       '@types/npmcli__package-json':
         specifier: ^4.0.4
         version: 4.0.4
+      chalk:
+        specifier: ^5.3.0
+        version: 5.3.0
       glob:
         specifier: ^10.3.12
         version: 10.3.12
+      jsonfile:
+        specifier: ^6.1.0
+        version: 6.1.0
       prompt-confirm:
         specifier: ^2.0.4
         version: 2.0.4
@@ -139,6 +145,9 @@ importers:
       fs-extra:
         specifier: ^11.2.0
         version: 11.2.0
+      hasha:
+        specifier: ^6.0.0
+        version: 6.0.0
       svgstore:
         specifier: ^3.0.1
         version: 3.0.1
@@ -1517,6 +1526,10 @@ packages:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
     engines: {node: '>=10'}
 
+  chalk@5.3.0:
+    resolution: {integrity: sha512-dLitG79d+GV1Nb/VYcCDFivJeK1hiukt9QjRNVOsUtTy1rR1YJsmpGGTZ3qJos+uw7WmWF4wUwBd9jxjocFC2w==}
+    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
+
   character-entities-html4@2.1.0:
     resolution: {integrity: sha512-1v7fgQRj6hnSwFpq1Eu0ynr/CDEw0rXo2B61qXrLNdHZmPKgb7fqS1a2JwF0rISo9q77jDI8VMEHoApn8qDoZA==}
 
@@ -2329,6 +2342,10 @@ packages:
     resolution: {integrity: sha512-NqADB8VjPFLM2V0VvHUewwwsw0ZWBaIdgo+ieHtK3hasLz4qeCRjYcqfB6AQrBggRKppKF8L52/VqdVsO47Dlw==}
     engines: {node: '>= 0.4'}
 
+  hasha@6.0.0:
+    resolution: {integrity: sha512-MLydoyGp9QJcjlhE5lsLHXYpWayjjWqkavzju2ZWD2tYa1CgmML1K1gWAu22BLFa2eZ0OfvJ/DlfoVjaD54U2Q==}
+    engines: {node: '>=18'}
+
   hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
@@ -2593,6 +2610,10 @@ packages:
   is-stream@2.0.1:
     resolution: {integrity: sha512-hFoiJiTl63nn+kstHGBtewWSKnQLpyb155KHheA1l39uvtO9nWIop1p3udqPcUd/xbF1VLMO4n7OI6p7RbngDg==}
     engines: {node: '>=8'}
+
+  is-stream@3.0.0:
+    resolution: {integrity: sha512-LnQR4bZ9IADDRSkvpqMGvt/tEJWclzklNgSw48V5EAaAeDd6qGvN8ei6k5p0tvxSR171VmGyHuTiAOfxAbr8kA==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   is-string@1.0.7:
     resolution: {integrity: sha512-tE2UXzivje6ofPW7l23cjDOMa09gb7xlAqG6jG5ej6uPV32TlWP3NKPigtaGeHNu9fohccRYvIiZMfOOnOYUtg==}
@@ -4070,6 +4091,10 @@ packages:
   type-fest@0.8.1:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
+
+  type-fest@4.15.0:
+    resolution: {integrity: sha512-tB9lu0pQpX5KJq54g+oHOLumOx+pMep4RaM6liXh2PKmVRFF+/vAtUP0ZaJ0kOySfVNjF6doBWPHhBhISKdlIA==}
+    engines: {node: '>=16'}
 
   type-is@1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
@@ -5960,6 +5985,8 @@ snapshots:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
 
+  chalk@5.3.0: {}
+
   character-entities-html4@2.1.0: {}
 
   character-entities-legacy@3.0.0: {}
@@ -7006,6 +7033,11 @@ snapshots:
     dependencies:
       has-symbols: 1.0.3
 
+  hasha@6.0.0:
+    dependencies:
+      is-stream: 3.0.0
+      type-fest: 4.15.0
+
   hasown@2.0.2:
     dependencies:
       function-bind: 1.1.2
@@ -7249,6 +7281,8 @@ snapshots:
       call-bind: 1.0.7
 
   is-stream@2.0.1: {}
+
+  is-stream@3.0.0: {}
 
   is-string@1.0.7:
     dependencies:
@@ -9045,6 +9079,8 @@ snapshots:
   type-fest@0.6.0: {}
 
   type-fest@0.8.1: {}
+
+  type-fest@4.15.0: {}
 
   type-is@1.6.18:
     dependencies:
