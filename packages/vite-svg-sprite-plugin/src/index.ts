@@ -14,6 +14,7 @@ let resolvedVirtualModuleId = "\0" + virtualModuleId;
 type Config = {
   spriteOutputName?: string;
   symbolId?: string;
+  logging?: boolean;
 };
 
 let store = svgstore({
@@ -27,6 +28,7 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
   let options: Required<Config> = {
     spriteOutputName: "sprite-[hash].svg",
     symbolId: "icon-[name]-[hash]",
+    logging: false,
     ...configOptions,
   };
 
@@ -107,13 +109,15 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
         let { data, spriteHash } = await getSpriteHash(sprite);
         let spritePath = path.join(outDir, assetsDir, options.spriteOutputName);
 
-        console.log({
-          ["WRITE_BUNDLE"]: {
-            hash: spriteHash,
-            ssr: config.build.ssr,
-            icons: [...icons.keys()],
-          },
-        });
+        if (options.logging) {
+          console.log({
+            ["WRITE_BUNDLE"]: {
+              hash: spriteHash,
+              ssr: config.build.ssr,
+              icons: [...icons.keys()],
+            },
+          });
+        }
 
         await fse.outputFile(spritePath.replace("[hash]", spriteHash), data);
       },
@@ -124,7 +128,9 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
           let sprite = store.toString();
           let { spriteHash, data } = await getSpriteHash(sprite);
           url = url.replace("[hash]", spriteHash);
-          console.log({ url });
+          if (options.logging) {
+            console.log({ url });
+          }
           if (req.url === url) {
             res.setHeader("Content-Type", "image/svg+xml");
             res.end(data);
@@ -145,14 +151,16 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
 
           let { spriteHash } = await getSpriteHash(sprite);
 
-          console.log({
-            [`${PLUGIN_NAME}:transform`]: {
-              hash: spriteHash,
-              ssr: config.build.ssr,
-              icons: [...icons.keys()],
-              code,
-            },
-          });
+          if (options.logging) {
+            console.log({
+              [`${PLUGIN_NAME}:transform`]: {
+                hash: spriteHash,
+                ssr: config.build.ssr,
+                icons: [...icons.keys()],
+                code,
+              },
+            });
+          }
 
           return {
             code: code.replace("[hash]", spriteHash),
