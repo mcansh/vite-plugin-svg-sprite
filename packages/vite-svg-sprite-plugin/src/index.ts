@@ -20,6 +20,15 @@ type Config = {
 let store = svgstore({
   // use file name in symbol defs
   renameDefs: true,
+  copyAttrs: [
+    "fill",
+    "stroke",
+    "stroke-width",
+    "stroke-linecap",
+    "stroke-linejoin",
+    "stroke-dasharray",
+    "stroke-dashoffset",
+  ],
 });
 let icons = new Set<string>();
 
