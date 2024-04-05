@@ -54,6 +54,7 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
           return resolvedVirtualModuleId;
         }
       },
+
       async load(id) {
         if (id === resolvedVirtualModuleId) {
           let url = `/${config.build.assetsDir}/${options.spriteOutputName}`;
@@ -128,7 +129,11 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
           });
         }
 
-        await fse.outputFile(spritePath.replace("[hash]", spriteHash), data);
+        let outputFile = options.spriteOutputName.includes("[hash]")
+          ? spritePath.replace("[hash]", spriteHash)
+          : spritePath;
+
+        await fse.outputFile(outputFile, data);
       },
 
       configureServer(server) {
@@ -137,9 +142,15 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
           let sprite = store.toString();
           let { spriteHash, data } = await getSpriteHash(sprite);
           url = url.replace("[hash]", spriteHash);
-          if (options.logging) {
+
+          if (!req.url) {
+            throw new Error("req.url is undefined");
+          }
+
+          if (options.logging && svgRegex.test(req.url)) {
             console.log({ url });
           }
+
           if (req.url === url) {
             res.setHeader("Content-Type", "image/svg+xml");
             res.end(data);
