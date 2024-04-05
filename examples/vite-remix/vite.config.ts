@@ -7,5 +7,11 @@ import { createSvgSpritePlugin } from "@mcansh/vite-svg-sprite-plugin";
 installGlobals();
 
 export default defineConfig({
-  plugins: [remix(), tsconfigPaths(), createSvgSpritePlugin()],
+  plugins: [
+    remix(),
+    tsconfigPaths(),
+    createSvgSpritePlugin({
+      spriteOutputName: "sprite.svg",
+    }),
+  ],
 });
