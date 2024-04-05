@@ -1,5 +1,15 @@
 # @mcansh/vite-svg-sprite-plugin
 
+## 0.2.1
+
+### Patch Changes
+
+- 4bf401b: check if output file has hash before attempting to replace
+- 9f2e3a5: copy common svg attributes to underlying symbol
+- b4955f5: - add svgo to minify sprite, re-add hashing to sprite.svg file name
+  - adds a virtual moduel `virtual:vite-svg-sprite-plugin` that returns the sprite url for preloading, etc
+  - adds client.d.ts file for virtual module
+
 ## 0.2.0
 
 ### Minor Changes
