@@ -111,17 +111,23 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
         }
       },
 
-      async writeBundle(this) {
-        let { assetsDir, outDir } = config.build;
+      async generateBundle() {
+        let { assetsDir } = config.build;
         let sprite = store.toString();
         let { data, spriteHash } = await getSpriteHash(sprite);
-        let spritePath = path.join(outDir, assetsDir, options.spriteOutputName);
 
         let outputFile = options.spriteOutputName.includes("[hash]")
-          ? spritePath.replace("[hash]", spriteHash)
-          : spritePath;
+          ? options.spriteOutputName.replace("[hash]", spriteHash)
+          : options.spriteOutputName;
 
-        await fse.outputFile(outputFile, data);
+        let outputFileName = path.join(assetsDir, outputFile);
+
+        this.emitFile({
+          source: data,
+          fileName: outputFileName,
+          name: "sprite.svg",
+          type: "asset",
+        });
       },
 
       configureServer(server) {
