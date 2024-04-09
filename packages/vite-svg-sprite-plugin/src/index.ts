@@ -19,6 +19,7 @@ let js = String.raw;
 type Config = {
   spriteOutputName?: string;
   symbolId?: string;
+  logging?: boolean;
 };
 
 let store = svgstore({
@@ -40,8 +41,9 @@ let referenceId: string | undefined;
 export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
   let config: ResolvedConfig;
   let options: Required<Config> = {
-    spriteOutputName: "sprite-[hash].svg",
+    spriteOutputName: "sprite.svg",
     symbolId: "icon-[name]-[hash]",
+    logging: false,
     ...configOptions,
   };
 
@@ -88,6 +90,33 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
     return { data: optimized.data, spriteHash };
   }
 
+  function log(...args: any[]) {
+    print("log", ...args);
+  }
+
+  function warn(...args: any[]) {
+    print("warn", ...args);
+  }
+
+  function error(...args: any[]) {
+    print("error", ...args);
+  }
+
+  function print(type: "log" | "warn" | "error", ...args: any[]) {
+    if (options.logging === false) return;
+    switch (type) {
+      case "log":
+        console.log(`[${PLUGIN_NAME}]`, ...args);
+        break;
+      case "warn":
+        console.warn(`[${PLUGIN_NAME}]`, ...args);
+        break;
+      case "error":
+        console.error(`[${PLUGIN_NAME}]`, ...args);
+        break;
+    }
+  }
+
   return [
     {
       name: PLUGIN_NAME,
@@ -98,40 +127,10 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
         }
       },
 
-      buildStart(options) {
-        console.log(`[vite-svg-sprite-plugin]`, `build started`);
-      },
-
-      async buildEnd() {
-        console.log(`[vite-svg-sprite-plugin]`, `build ended`);
-
-        let { data } = await getSpriteHash();
-
-        referenceId = this.emitFile({
-          type: "asset",
-          source: data,
-          name: "sprite.svg",
-        });
-      },
-
       async load(id) {
         if (id === resolvedVirtualModuleId) {
-          console.warn(`[vite-svg-sprite-plugin]`, `temporarily deprecated`);
+          warn(`the virtual module has been temporarily disabled`);
           return js`export default "";`;
-        }
-
-        if (id.endsWith(".svg")) {
-          console.log(`[vite-svg-sprite-plugin]`, `loading`, id);
-          let symbolId = await addIconToSprite(id);
-          let { data } = await getSpriteHash();
-
-          referenceId = this.emitFile({
-            type: "asset",
-            source: data,
-            name: "sprite.svg",
-          });
-
-          return js`export default import.meta.ROLLUP_FILE_URL_${referenceId}#${symbolId};`;
         }
       },
 
@@ -141,10 +140,7 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
 
       async transform(_code, id) {
         if (svgRegex.test(id)) {
-          console.log(`[vite-svg-sprite-plugin]`, `transforming`, id);
-
-          let spriteUrl = `/${config.build.assetsDir}/sprite.svg`;
-
+          let spriteUrl = `/${config.build.assetsDir}/${options.spriteOutputName}`;
           let symbolId = await addIconToSprite(id);
 
           return {
@@ -154,68 +150,50 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
         }
       },
 
+      async buildEnd() {
+        let { data } = await getSpriteHash();
+
+        referenceId = this.emitFile({
+          type: "asset",
+          source: data,
+          name: options.spriteOutputName,
+        });
+      },
+
       async generateBundle(_, bundle) {
-        console.log(`[vite-svg-sprite-plugin]`, `generating bundle`);
-
-        console.log({ referenceId });
-
         if (!referenceId) {
-          console.warn(
-            `[vite-svg-sprite-plugin]`,
-            `referenceId not found, skipping`
-          );
+          warn(`referenceId not found, skipping`);
           return;
         }
 
         for (let id in bundle) {
           let chunk = bundle[id];
           if (!chunk) {
-            console.warn(
-              `[vite-svg-sprite-plugin]`,
-              `chunk not found for id ${id}, skipping`
-            );
+            warn(`chunk not found for id ${id}, skipping`);
             continue;
           }
-          console.log(`[vite-svg-sprite-plugin]`, chunk.type, chunk.fileName);
+
           if (chunk.type === "chunk") {
-            console.log({ referenceId });
-
-            if (!referenceId) {
-              console.warn(
-                `[vite-svg-sprite-plugin]`,
-                `referenceId not found, skipping`
-              );
-              continue;
-            }
-
             let referenceFileName = `/${this.getFileName(referenceId)}`;
 
             let content = chunk.code;
-            let chunkFileName = path.join(config.build.outDir, chunk.fileName);
 
-            let currentSpriteUrl = `/${config.build.assetsDir}/sprite.svg`;
+            let currentSpriteUrl = `/${config.build.assetsDir}/${options.spriteOutputName}`;
 
-            console.log({ currentSpriteUrl });
+            log({ currentSpriteUrl });
 
             // check if content has current sprite url
             let currentSpriteUrlRegex = new RegExp(currentSpriteUrl, "g");
             let matches = content.match(currentSpriteUrlRegex);
 
-            if (!matches) {
-              console.warn(
-                `[vite-svg-sprite-plugin]`,
-                `current sprite url not found in file ${chunk.fileName}, skipping`
-              );
-              continue;
-            }
+            if (!matches) continue;
 
             let newContent = content.replace(
               currentSpriteUrlRegex,
               referenceFileName
             );
-            console.log(
-              `[vite-svg-sprite-plugin]`,
-              `found current sprite url in file ${chunk.fileName}`
+            log(
+              `found current sprite url in file ${chunk.fileName}, replacing with ${referenceFileName}`
             );
 
             // write new content to file in a temp location to avoid it being overwritten
@@ -226,33 +204,27 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
             let tempChunkFileName = path.join(config.cacheDir, chunk.fileName);
             await fse.outputFile(tempChunkFileName, newContent);
 
-            console.log(
-              `[vite-svg-sprite-plugin]`,
-              `wrote to temp file ${tempChunkFileName}`
-            );
+            log(`wrote to temp file ${tempChunkFileName}`);
           }
         }
       },
 
       async writeBundle(_, bundle) {
-        console.log(`[vite-svg-sprite-plugin]`, `writing bundle`);
+        if (!referenceId) {
+          warn(`referenceId not found, skipping`);
+          return;
+        }
 
         for (let id in bundle) {
           let chunk = bundle[id];
           if (!chunk) {
-            console.warn(
-              `[vite-svg-sprite-plugin]`,
-              `chunk not found for id ${id}, skipping`
-            );
+            warn(`chunk not found for id ${id}, skipping`);
             continue;
           }
 
           // we can skip the svg
           if (svgRegex.test(chunk.fileName)) {
-            console.warn(
-              `[vite-svg-sprite-plugin]`,
-              `skipping svg file ${chunk.fileName}`
-            );
+            warn(`skipping svg file ${chunk.fileName}`);
             continue;
           }
 
@@ -262,74 +234,61 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
           let originalFileName = path.join(config.build.outDir, chunk.fileName);
           let tempFileName = path.join(config.cacheDir, chunk.fileName);
 
-          console.log({ originalFileName, tempFileName });
+          log({ originalFileName, tempFileName });
 
           if (!(await fse.pathExists(tempFileName))) {
-            console.warn(
-              `[vite-svg-sprite-plugin]`,
-              `temp file not found for ${chunk.fileName}, skipping`
-            );
             continue;
           }
 
           let originalContent = await fse.readFile(originalFileName, "utf-8");
           let tempContent = await fse.readFile(tempFileName, "utf-8");
 
-          if (originalContent === tempContent) {
-            // content is the same, no need to overwrite
-          } else {
-            // check if the only changes are ones we made earlier
-            // if so, we can overwrite the original file
-            // if not, we should throw an error
-            let currentSpriteUrl = `/${config.build.assetsDir}/sprite.svg`;
-            let currentSpriteUrlRegex = new RegExp(currentSpriteUrl, "g");
+          let currentSpriteUrl = `/${config.build.assetsDir}/${options.spriteOutputName}`;
+          let currentSpriteUrlRegex = new RegExp(currentSpriteUrl, "g");
 
-            if (!referenceId) {
-              console.warn(
-                `[vite-svg-sprite-plugin]`,
-                `referenceId not found, skipping`
-              );
-              continue;
-            }
+          let referenceFileName = `/${this.getFileName(referenceId)}`;
+          let referenceFileNameRegex = new RegExp(referenceFileName, "g");
 
-            let referenceFileName = `/${this.getFileName(referenceId)}`;
-            let referenceFileNameRegex = new RegExp(referenceFileName, "g");
+          let originalMatches = originalContent.match(currentSpriteUrlRegex);
+          let tempMatches = tempContent.match(referenceFileNameRegex);
 
-            let originalMatches = originalContent.match(currentSpriteUrlRegex);
-            let tempMatches = tempContent.match(referenceFileNameRegex);
-
-            if (!originalMatches || !tempMatches) {
-              console.warn(
-                `[vite-svg-sprite-plugin]`,
-                `original or temp file does not contain sprite url, skipping`
-              );
-              continue;
-            }
-
-            // replace the sprite url from the original content again
-            // so we can compare the two
-            let newOriginalContent = originalContent.replace(
-              currentSpriteUrlRegex,
-              referenceFileName
-            );
-
-            if (newOriginalContent !== tempContent) {
-              console.error(
-                `[vite-svg-sprite-plugin]`,
-                `original file ${originalFileName} and temp file ${tempFileName} are different`
-              );
-
-              continue;
-            }
-
-            // overwrite the original file
-            await fse.outputFile(originalFileName, tempContent);
-            console.log(
-              `[vite-svg-sprite-plugin]`,
-              `overwrote original file ${originalFileName}`
-            );
+          if (!originalMatches || !tempMatches) {
+            warn(`original or temp file does not contain sprite url, skipping`);
+            continue;
           }
+
+          // replace the sprite url from the original content again
+          // so we can compare the two
+          let newOriginalContent = originalContent.replace(
+            currentSpriteUrlRegex,
+            referenceFileName
+          );
+
+          if (newOriginalContent !== tempContent) {
+            error(
+              `original file ${originalFileName} and temp file ${tempFileName} are different`
+            );
+
+            continue;
+          }
+
+          // overwrite the original file
+          await fse.outputFile(originalFileName, tempContent);
+          log(`overwrote original file ${originalFileName}`);
         }
+      },
+
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (
+            req.url !== `/${config.build.assetsDir}/${options.spriteOutputName}`
+          ) {
+            return next();
+          }
+
+          res.setHeader("Content-Type", "image/svg+xml");
+          return res.end(store.toString());
+        });
       },
     },
   ];
