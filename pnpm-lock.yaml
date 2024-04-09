@@ -42,7 +42,7 @@ importers:
         specifier: ^5.4.3
         version: 5.4.3
 
-  examples/vite-no-remix:
+  examples/basic-vite:
     dependencies:
       react:
         specifier: 18.2.0
@@ -70,7 +70,7 @@ importers:
         specifier: ^5.2.7
         version: 5.2.7(@types/node@20.12.2)
 
-  examples/vite-remix:
+  examples/remix:
     dependencies:
       '@remix-run/node':
         specifier: ^2.8.1
@@ -2892,6 +2892,7 @@ packages:
 
   loose-envify@1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
+    hasBin: true
 
   lru-cache@10.2.0:
     resolution: {integrity: sha512-2bIM8x+VAf6JT4bKAljS1qUWgMsqZRPGJS6FSahIMPVvctcNhyVp7AJu7quxOW9jwkryBReKZY5tY5JYv2n/7Q==}
