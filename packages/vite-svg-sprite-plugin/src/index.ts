@@ -14,7 +14,6 @@ let resolvedVirtualModuleId = "\0" + virtualModuleId;
 type Config = {
   spriteOutputName?: string;
   symbolId?: string;
-  logging?: boolean;
 };
 
 let store = svgstore({
@@ -37,7 +36,6 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
   let options: Required<Config> = {
     spriteOutputName: "sprite-[hash].svg",
     symbolId: "icon-[name]-[hash]",
-    logging: false,
     ...configOptions,
   };
 
@@ -119,16 +117,6 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
         let { data, spriteHash } = await getSpriteHash(sprite);
         let spritePath = path.join(outDir, assetsDir, options.spriteOutputName);
 
-        if (options.logging) {
-          console.log({
-            ["WRITE_BUNDLE"]: {
-              hash: spriteHash,
-              ssr: config.build.ssr,
-              icons: [...icons.keys()],
-            },
-          });
-        }
-
         let outputFile = options.spriteOutputName.includes("[hash]")
           ? spritePath.replace("[hash]", spriteHash)
           : spritePath;
@@ -145,10 +133,6 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
 
           if (!req.url) {
             throw new Error("req.url is undefined");
-          }
-
-          if (options.logging && svgRegex.test(req.url)) {
-            console.log({ url });
           }
 
           if (req.url === url) {
@@ -170,17 +154,6 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
           let sprite = store.toString();
 
           let { spriteHash } = await getSpriteHash(sprite);
-
-          if (options.logging) {
-            console.log({
-              [`${PLUGIN_NAME}:transform`]: {
-                hash: spriteHash,
-                ssr: config.build.ssr,
-                icons: [...icons.keys()],
-                code,
-              },
-            });
-          }
 
           return {
             code: code.replace("[hash]", spriteHash),
