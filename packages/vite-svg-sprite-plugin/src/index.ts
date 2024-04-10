@@ -6,10 +6,15 @@ import { ResolvedConfig, Plugin } from "vite";
 import { hash } from "hasha";
 import svgo from "svgo";
 
+import pkgJson from "../package.json" assert { type: "json" };
+
 let svgRegex = /\.svg$/;
-let PLUGIN_NAME = "vite-svg-sprite-plugin";
+let PLUGIN_NAME = pkgJson.name;
+
 let virtualModuleId = `virtual:${PLUGIN_NAME}`;
 let resolvedVirtualModuleId = "\0" + virtualModuleId;
+
+let js = String.raw;
 
 type Config = {
   spriteOutputName?: string;
@@ -30,24 +35,98 @@ let store = svgstore({
     "stroke-dashoffset",
   ],
 });
-let icons = new Set<string>();
+let icons = new Map<string, string>();
+let iconsAdded = new Set<string>();
+let referenceId: string | undefined;
 
 export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
   let config: ResolvedConfig;
   let options: Required<Config> = {
-    spriteOutputName: "sprite-[hash].svg",
+    spriteOutputName: "sprite.svg",
     symbolId: "icon-[name]-[hash]",
     logging: false,
     ...configOptions,
   };
 
+  async function addIconToSprite(id: string, content?: string) {
+    if (!content) content = await fse.readFile(id, "utf-8");
+
+    let basename = path.basename(id, ".svg");
+    let symbolId = options.symbolId;
+    if (options.symbolId.includes("[name]")) {
+      symbolId = symbolId.replace("[name]", basename);
+    }
+    if (options.symbolId.includes("[hash]")) {
+      let contentHash = await hash(id);
+      symbolId = symbolId.replace("[hash]", contentHash);
+    }
+
+    icons.set(symbolId, content);
+
+    return symbolId;
+  }
+
+  async function getSpriteHash() {
+    let sorted = Array.from(icons).sort((a, b) => {
+      return a[0].localeCompare(b[0]);
+    });
+
+    for (let [id, content] of sorted) {
+      if (iconsAdded.has(id)) continue;
+      iconsAdded.add(id);
+      store.add(id, content);
+    }
+
+    let optimized = svgo.optimize(store.toString(), {
+      plugins: [
+        {
+          name: "preset-default",
+          params: {
+            overrides: {
+              removeHiddenElems: false,
+              removeUselessDefs: false,
+              cleanupIds: false,
+            },
+          },
+        },
+      ],
+    });
+
+    let spriteHash = await hash(optimized.data);
+
+    return { data: optimized.data, spriteHash };
+  }
+
+  function log(...args: any[]) {
+    print("log", ...args);
+  }
+
+  function warn(...args: any[]) {
+    print("warn", ...args);
+  }
+
+  function error(...args: any[]) {
+    print("error", ...args);
+  }
+
+  function print(type: "log" | "warn" | "error", ...args: any[]) {
+    if (options.logging === false) return;
+    switch (type) {
+      case "log":
+        console.log(`[${PLUGIN_NAME}]`, ...args);
+        break;
+      case "warn":
+        console.warn(`[${PLUGIN_NAME}]`, ...args);
+        break;
+      case "error":
+        console.error(`[${PLUGIN_NAME}]`, ...args);
+        break;
+    }
+  }
+
   return [
     {
       name: PLUGIN_NAME,
-
-      configResolved(resolvedConfig) {
-        config = resolvedConfig;
-      },
 
       resolveId(id) {
         if (id === virtualModuleId) {
@@ -57,158 +136,170 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
 
       async load(id) {
         if (id === resolvedVirtualModuleId) {
-          let url = `/${config.build.assetsDir}/${options.spriteOutputName}`;
-          let sprite = store.toString();
-          let { spriteHash } = await getSpriteHash(sprite);
-          url = url.replace("[hash]", spriteHash);
-          return `export default "${url}";`;
+          warn(`the virtual module has been temporarily disabled`);
+          return js`export default "";`;
         }
       },
 
-      config(userConfig) {
-        return {
-          build: {
-            assetsInlineLimit(filePath, content) {
-              // don't inline svg files
-              if (svgRegex.test(filePath)) {
-                return true;
-              }
-
-              if (typeof userConfig.build?.assetsInlineLimit === "function") {
-                return userConfig.build.assetsInlineLimit(filePath, content);
-              }
-
-              // check buffer length in bytes (default is 4096) and return true if it's less than the limit
-              return content.length < 4096;
-            },
-          },
-        };
+      configResolved(resolvedConfig) {
+        config = resolvedConfig;
       },
 
       async transform(_code, id) {
         if (svgRegex.test(id)) {
-          let basename = path.basename(id, ".svg");
-          let content = await fse.readFile(id, "utf-8");
+          let spriteUrl = `/${config.build.assetsDir}/${options.spriteOutputName}`;
+          let symbolId = await addIconToSprite(id);
 
-          let symbolId = options.symbolId;
-          if (options.symbolId.includes("[name]")) {
-            symbolId = symbolId.replace("[name]", basename);
-          }
-          if (options.symbolId.includes("[hash]")) {
-            let contentHash = await hash(id);
-            symbolId = symbolId.replace("[hash]", contentHash);
-          }
-
-          // only add the icon if it hasn't been added before
-          if (!icons.has(symbolId)) {
-            store.add(symbolId, content);
-            icons.add(symbolId);
-          }
-
-          let url = `/${config.build.assetsDir}/${options.spriteOutputName}`;
           return {
-            code: `export default "${url}#${symbolId}";`,
-            map: null,
+            code: js`export default "${spriteUrl}#${symbolId}";`,
+            map: { mappings: "" },
           };
         }
       },
 
-      async writeBundle(this) {
-        let { assetsDir, outDir } = config.build;
-        let sprite = store.toString();
-        let { data, spriteHash } = await getSpriteHash(sprite);
-        let spritePath = path.join(outDir, assetsDir, options.spriteOutputName);
+      async buildEnd() {
+        let { data } = await getSpriteHash();
 
-        if (options.logging) {
-          console.log({
-            ["WRITE_BUNDLE"]: {
-              hash: spriteHash,
-              ssr: config.build.ssr,
-              icons: [...icons.keys()],
-            },
-          });
+        referenceId = this.emitFile({
+          type: "asset",
+          source: data,
+          name: options.spriteOutputName,
+        });
+      },
+
+      async generateBundle(_, bundle) {
+        if (!referenceId) {
+          warn(`referenceId not found, skipping`);
+          return;
         }
 
-        let outputFile = options.spriteOutputName.includes("[hash]")
-          ? spritePath.replace("[hash]", spriteHash)
-          : spritePath;
+        for (let id in bundle) {
+          let chunk = bundle[id];
+          if (!chunk) {
+            warn(`chunk not found for id ${id}, skipping`);
+            continue;
+          }
 
-        await fse.outputFile(outputFile, data);
+          if (chunk.type === "chunk") {
+            let referenceFileName = `/${this.getFileName(referenceId)}`;
+
+            let content = chunk.code;
+
+            let currentSpriteUrl = `/${config.build.assetsDir}/${options.spriteOutputName}`;
+
+            log({ currentSpriteUrl });
+
+            // check if content has current sprite url
+            let currentSpriteUrlRegex = new RegExp(currentSpriteUrl, "g");
+            let matches = content.match(currentSpriteUrlRegex);
+
+            if (!matches) continue;
+
+            let newContent = content.replace(
+              currentSpriteUrlRegex,
+              referenceFileName
+            );
+            log(
+              `found current sprite url in file ${chunk.fileName}, replacing with ${referenceFileName}`
+            );
+
+            // write new content to file in a temp location to avoid it being overwritten
+            // then compare output sans our changes to the original file
+            // if they are the same, we can overwrite the original file
+            // if they are different, we can throw an error
+
+            let tempChunkFileName = path.join(config.cacheDir, chunk.fileName);
+            await fse.outputFile(tempChunkFileName, newContent);
+
+            log(`wrote to temp file ${tempChunkFileName}`);
+          }
+        }
+      },
+
+      async writeBundle(_, bundle) {
+        if (!referenceId) {
+          warn(`referenceId not found, skipping`);
+          return;
+        }
+
+        for (let id in bundle) {
+          let chunk = bundle[id];
+          if (!chunk) {
+            warn(`chunk not found for id ${id}, skipping`);
+            continue;
+          }
+
+          // we can skip the svg
+          if (svgRegex.test(chunk.fileName)) {
+            warn(`skipping svg file ${chunk.fileName}`);
+            continue;
+          }
+
+          // read content of original file and temp file
+          // if they are the same sans our changes, we can overwrite the original file
+          // if they are different, we can throw an error
+          let originalFileName = path.join(config.build.outDir, chunk.fileName);
+          let tempFileName = path.join(config.cacheDir, chunk.fileName);
+
+          log({ originalFileName, tempFileName });
+
+          if (!(await fse.pathExists(tempFileName))) {
+            continue;
+          }
+
+          let originalContent = await fse.readFile(originalFileName, "utf-8");
+          let tempContent = await fse.readFile(tempFileName, "utf-8");
+
+          let currentSpriteUrl = `/${config.build.assetsDir}/${options.spriteOutputName}`;
+          let currentSpriteUrlRegex = new RegExp(currentSpriteUrl, "g");
+
+          let referenceFileName = `/${this.getFileName(referenceId)}`;
+          let referenceFileNameRegex = new RegExp(referenceFileName, "g");
+
+          let originalMatches = originalContent.match(currentSpriteUrlRegex);
+          let tempMatches = tempContent.match(referenceFileNameRegex);
+
+          if (!originalMatches || !tempMatches) {
+            warn(`original or temp file does not contain sprite url, skipping`);
+            continue;
+          }
+
+          // replace the sprite url from the original content again
+          // so we can compare the two
+          let newOriginalContent = originalContent.replace(
+            currentSpriteUrlRegex,
+            referenceFileName
+          );
+
+          if (newOriginalContent !== tempContent) {
+            error(
+              `original file ${originalFileName} and temp file ${tempFileName} are different`
+            );
+
+            continue;
+          }
+
+          // overwrite the original file
+          await fse.outputFile(originalFileName, tempContent);
+          log(`overwrote original file ${originalFileName}`);
+        }
       },
 
       configureServer(server) {
         server.middlewares.use(async (req, res, next) => {
-          let url = `/${config.build.assetsDir}/${options.spriteOutputName}`;
-          let sprite = store.toString();
-          let { spriteHash, data } = await getSpriteHash(sprite);
-          url = url.replace("[hash]", spriteHash);
-
-          if (!req.url) {
-            throw new Error("req.url is undefined");
-          }
-
-          if (options.logging && svgRegex.test(req.url)) {
-            console.log({ url });
-          }
-
-          if (req.url === url) {
+          if (
+            req.url === `/${config.build.assetsDir}/${options.spriteOutputName}`
+          ) {
             res.setHeader("Content-Type", "image/svg+xml");
-            res.end(data);
-          } else {
-            next();
+
+            let { data } = await getSpriteHash();
+
+            return res.end(data);
           }
+
+          return next();
         });
       },
     },
-
-    // re-transform each imported svg to inject the hash
-    {
-      name: `${PLUGIN_NAME}:transform`,
-      enforce: "post",
-      async transform(code, id) {
-        if (svgRegex.test(id)) {
-          let sprite = store.toString();
-
-          let { spriteHash } = await getSpriteHash(sprite);
-
-          if (options.logging) {
-            console.log({
-              [`${PLUGIN_NAME}:transform`]: {
-                hash: spriteHash,
-                ssr: config.build.ssr,
-                icons: [...icons.keys()],
-                code,
-              },
-            });
-          }
-
-          return {
-            code: code.replace("[hash]", spriteHash),
-            map: null,
-          };
-        }
-      },
-    },
   ];
-}
-
-async function getSpriteHash(sprite: string) {
-  let optimized = svgo.optimize(sprite, {
-    plugins: [
-      {
-        name: "preset-default",
-        params: {
-          overrides: {
-            removeHiddenElems: false,
-            removeUselessDefs: false,
-            cleanupIds: false,
-          },
-        },
-      },
-    ],
-  });
-
-  let spriteHash = await hash(optimized.data);
-
-  return { data: optimized.data, spriteHash };
 }

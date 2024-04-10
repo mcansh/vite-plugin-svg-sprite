@@ -11,7 +11,8 @@ export default defineConfig({
     remix(),
     tsconfigPaths(),
     createSvgSpritePlugin({
-      spriteOutputName: "sprite.svg",
+      logging: true,
+      spriteOutputName: "some-file.svg",
     }),
   ],
 });
