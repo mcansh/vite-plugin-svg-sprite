@@ -35,7 +35,8 @@ let store = svgstore({
     "stroke-dashoffset",
   ],
 });
-let icons = new Set<string>();
+let icons = new Map<string, string>();
+let iconsAdded = new Set<string>();
 let referenceId: string | undefined;
 
 export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
@@ -60,16 +61,22 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
       symbolId = symbolId.replace("[hash]", contentHash);
     }
 
-    // only add the icon if it hasn't been added before
-    if (!icons.has(symbolId)) {
-      store.add(symbolId, content);
-      icons.add(symbolId);
-    }
+    icons.set(symbolId, content);
 
     return symbolId;
   }
 
   async function getSpriteHash() {
+    let sorted = Array.from(icons).sort((a, b) => {
+      return a[0].localeCompare(b[0]);
+    });
+
+    for (let [id, content] of sorted) {
+      if (iconsAdded.has(id)) continue;
+      iconsAdded.add(id);
+      store.add(id, content);
+    }
+
     let optimized = svgo.optimize(store.toString(), {
       plugins: [
         {
@@ -279,15 +286,18 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
       },
 
       configureServer(server) {
-        server.middlewares.use((req, res, next) => {
+        server.middlewares.use(async (req, res, next) => {
           if (
-            req.url !== `/${config.build.assetsDir}/${options.spriteOutputName}`
+            req.url === `/${config.build.assetsDir}/${options.spriteOutputName}`
           ) {
-            return next();
+            res.setHeader("Content-Type", "image/svg+xml");
+
+            let { data } = await getSpriteHash();
+
+            return res.end(data);
           }
 
-          res.setHeader("Content-Type", "image/svg+xml");
-          return res.end(store.toString());
+          return next();
         });
       },
     },
