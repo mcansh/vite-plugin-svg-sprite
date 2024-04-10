@@ -1,0 +1,47 @@
+diff --git a/dist/changesets-assemble-release-plan.cjs.js b/dist/changesets-assemble-release-plan.cjs.js
+index ee5c0f67fabadeb112e9f238d8b144a4d125830f..e33f11f706cec2a88828e377158304b84147deca 100644
+--- a/dist/changesets-assemble-release-plan.cjs.js
++++ b/dist/changesets-assemble-release-plan.cjs.js
+@@ -388,7 +388,7 @@ function applyLinks(releases, packagesByName, linked) {
+ 
+ function getPreVersion(version) {
+   let parsed = semverParse__default["default"](version);
+-  let preVersion = parsed.prerelease[1] === undefined ? -1 : parsed.prerelease[1];
++  let preVersion = parsed?.prerelease[1] === undefined ? -1 : parsed.prerelease[1];
+ 
+   if (typeof preVersion !== "number") {
+     throw new errors.InternalError("preVersion is not a number");
+diff --git a/dist/changesets-assemble-release-plan.esm.js b/dist/changesets-assemble-release-plan.esm.js
+index bf5202626a164a7780650d333983c3479b078689..30dafa85f8954f201d91661018aa894d2c5bd865 100644
+--- a/dist/changesets-assemble-release-plan.esm.js
++++ b/dist/changesets-assemble-release-plan.esm.js
+@@ -196,10 +196,16 @@ function shouldBumpMajor({
+   onlyUpdatePeerDependentsWhenOutOfRange
+ }) {
+   // we check if it is a peerDependency because if it is, our dependent bump type might need to be major.
+-  return depType === "peerDependencies" && nextRelease.type !== "none" && nextRelease.type !== "patch" && ( // 1. If onlyUpdatePeerDependentsWhenOutOfRange set to true, bump major if the version is leaving the range.
+-  // 2. If onlyUpdatePeerDependentsWhenOutOfRange set to false, bump major regardless whether or not the version is leaving the range.
+-  !onlyUpdatePeerDependentsWhenOutOfRange || !semverSatisfies(incrementVersion(nextRelease, preInfo), versionRange)) && ( // bump major only if the dependent doesn't already has a major release.
+-  !releases.has(dependent) || releases.has(dependent) && releases.get(dependent).type !== "major");
++  return (
++    depType === "peerDependencies" &&
++    nextRelease.type !== "none" &&
++    nextRelease.type !== "patch" && // 1. If onlyUpdatePeerDependentsWhenOutOfRange set to true, bump major if the version is leaving the range.
++    // 2. If onlyUpdatePeerDependentsWhenOutOfRange set to false, bump major regardless whether or not the version is leaving the range.
++    (!onlyUpdatePeerDependentsWhenOutOfRange ||
++      !semverSatisfies(incrementVersion(nextRelease, preInfo), versionRange, { includePrerelease: true })) && // bump major only if the dependent doesn't already has a major release.
++    (!releases.has(dependent) ||
++      (releases.has(dependent) && releases.get(dependent).type !== "major"))
++  );
+ }
+ 
+ // This function takes in changesets and returns one release per
+@@ -377,7 +383,7 @@ function applyLinks(releases, packagesByName, linked) {
+ 
+ function getPreVersion(version) {
+   let parsed = semverParse(version);
+-  let preVersion = parsed.prerelease[1] === undefined ? -1 : parsed.prerelease[1];
++  let preVersion = parsed?.prerelease[1] === undefined ? -1 : parsed.prerelease[1];
+ 
+   if (typeof preVersion !== "number") {
+     throw new InternalError("preVersion is not a number");

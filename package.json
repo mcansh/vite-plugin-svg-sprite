@@ -21,5 +21,10 @@
     "semver": "^7.6.0",
     "typescript": "^5.4.3"
   },
-  "packageManager": "pnpm@9.0.0-beta.2+sha256.013b34133be0fd7f97d8739bd1a64a2b2c4b15af936ef77a14f5db26efb6bef4"
+  "packageManager": "pnpm@9.0.0-beta.2+sha256.013b34133be0fd7f97d8739bd1a64a2b2c4b15af936ef77a14f5db26efb6bef4",
+  "pnpm": {
+    "patchedDependencies": {
+      "@changesets/assemble-release-plan@6.0.0": "patches/@changesets__assemble-release-plan@6.0.0.patch"
+    }
+  }
 }
