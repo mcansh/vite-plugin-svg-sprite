@@ -136,8 +136,8 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
 
       async load(id) {
         if (id === resolvedVirtualModuleId) {
-          warn(`the virtual module has been temporarily disabled`);
-          return js`export default "";`;
+          let spriteUrl = `/${config.build.assetsDir}/${options.spriteOutputName}`;
+          return js`export default ${JSON.stringify(spriteUrl)}`;
         }
       },
 

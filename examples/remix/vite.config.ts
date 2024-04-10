@@ -12,7 +12,7 @@ export default defineConfig({
     tsconfigPaths(),
     createSvgSpritePlugin({
       logging: true,
-      spriteOutputName: "some-file.svg",
+      spriteOutputName: "mysvgsprite.svg",
     }),
   ],
 });
