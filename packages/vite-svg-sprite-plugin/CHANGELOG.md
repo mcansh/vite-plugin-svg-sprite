@@ -1,12 +1,6 @@
 # @mcansh/vite-svg-sprite-plugin
 
-## 0.4.0-pre.1
-
-### Patch Changes
-
-- 41f7c0c: re-add virtual module support
-
-## 0.4.0-pre.0
+## 0.4.0
 
 ### Minor Changes
 
@@ -15,6 +9,10 @@
   do some post build file transforms to replace the dev sprite name with the actual hashed sprite filename
 
   sort icons before adding to sprite for consistent hashes
+
+### Patch Changes
+
+- 41f7c0c: re-add virtual module support
 
 ## 0.3.0
 
