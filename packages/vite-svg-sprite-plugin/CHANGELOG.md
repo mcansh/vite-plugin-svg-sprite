@@ -1,5 +1,15 @@
 # @mcansh/vite-svg-sprite-plugin
 
+## 0.4.0-pre.0
+
+### Minor Changes
+
+- 9507fa9: use vite's emitFile to emit consistent file to all builds
+
+  do some post build file transforms to replace the dev sprite name with the actual hashed sprite filename
+
+  sort icons before adding to sprite for consistent hashes
+
 ## 0.3.0
 
 ### Minor Changes
