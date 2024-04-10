@@ -5,6 +5,7 @@
     "@mcansh/vite-svg-sprite-plugin": "0.3.0"
   },
   "changesets": [
-    "itchy-trainers-dream"
+    "itchy-trainers-dream",
+    "small-pianos-work"
   ]
 }
