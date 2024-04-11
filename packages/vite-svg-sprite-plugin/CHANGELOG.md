@@ -1,5 +1,13 @@
 # @mcansh/vite-svg-sprite-plugin
 
+## 0.4.2
+
+### Patch Changes
+
+- f863ed9: remove import assertion as it breaks other tooling
+
+  instead just hardcode the plugin name
+
 ## 0.4.1
 
 ### Patch Changes
