@@ -1,5 +1,11 @@
 # @mcansh/vite-svg-sprite-plugin
 
+## 0.4.1
+
+### Patch Changes
+
+- b67fd78: fix virtual module name
+
 ## 0.4.0
 
 ### Minor Changes
