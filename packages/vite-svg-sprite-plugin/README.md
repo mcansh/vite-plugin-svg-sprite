@@ -34,9 +34,15 @@ createSvgSpritePlugin({
 ## usage
 
 ```tsx
+import spriteUrl from "virtual:@mcansh/vite-svg-sprite-plugin";
 import linkIconHref from "@primer/octicons/build/svg/link-16.svg";
+import type { LinksFunction } from "@remix-run/node";
 
-function Component() {
+export const links: LinksFunction = () => {
+  return [{ rel: "preload", as: "image", href: spriteUrl, type: "image/svg+xml" }];
+};
+
+export default function Component() {
   return (
     <svg className="size-4" aria-hidden>
       <use href={linkIconHref} />
