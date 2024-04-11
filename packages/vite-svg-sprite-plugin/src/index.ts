@@ -6,10 +6,8 @@ import { ResolvedConfig, Plugin } from "vite";
 import { hash } from "hasha";
 import svgo from "svgo";
 
-import pkgJson from "../package.json" assert { type: "json" };
-
 let svgRegex = /\.svg$/;
-let PLUGIN_NAME = pkgJson.name;
+let PLUGIN_NAME = "@mcansh/vite-svg-sprite-plugin";
 
 let virtualModuleId = `virtual:${PLUGIN_NAME}`;
 let resolvedVirtualModuleId = "\0" + virtualModuleId;
