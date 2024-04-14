@@ -5,10 +5,10 @@ this vite plugin will transform any imported svg files and combine them into an 
 ## installation and set up
 
 ```sh
-  npm i -D @mcansh/vite-svg-sprite-plugin
+npm i -D @mcansh/vite-svg-sprite-plugin
 ```
 
-this is an example using Remix, but this plugin should work everywhere else as well
+this is an example using Remix, but this plugin works with any vite configuration
 
 ```ts
 import { createSvgSpritePlugin } from "@mcansh/vite-svg-sprite-plugin";
