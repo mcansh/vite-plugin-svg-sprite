@@ -22,10 +22,14 @@ type Config = {
   svgstoreOptions?: SVGStoreOptions;
 };
 
+/**
+ * @deprecated use svgSprite instead
+ */
 export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
   console.warn(
     `createSvgSpritePlugin has been renamed to svgSprite, please update your imports as this will be removed in a future release.`
   );
+
   return svgSprite(configOptions);
 }
 

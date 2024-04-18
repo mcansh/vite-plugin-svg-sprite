@@ -58,7 +58,7 @@ importers:
     devDependencies:
       '@mcansh/vite-plugin-svg-sprite':
         specifier: workspace:*
-        version: link:../../packages/vite-svg-sprite-plugin
+        version: link:../../packages/vite-plugin-svg-sprite
       '@radix-ui/icons':
         specifier: https://gitpkg.now.sh/radix-ui/icons/packages/radix-icons?master
         version: '@radix-ui/react-icons@https://gitpkg.now.sh/radix-ui/icons/packages/radix-icons?master(react@18.2.0)'
@@ -104,7 +104,7 @@ importers:
     devDependencies:
       '@mcansh/vite-plugin-svg-sprite':
         specifier: workspace:*
-        version: link:../../packages/vite-svg-sprite-plugin
+        version: link:../../packages/vite-plugin-svg-sprite
       '@remix-run/dev':
         specifier: ^2.8.1
         version: 2.8.1(@remix-run/serve@2.8.1(typescript@5.4.5))(@types/node@20.12.7)(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.7))
@@ -154,7 +154,7 @@ importers:
         specifier: ^4.2.1
         version: 4.3.2(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.7))
 
-  packages/vite-svg-sprite-plugin:
+  packages/vite-plugin-svg-sprite:
     dependencies:
       fs-extra:
         specifier: ^11.2.0
