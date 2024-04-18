@@ -38,6 +38,13 @@ let iconsAdded = new Set<string>();
 let referenceId: string | undefined;
 
 export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
+  console.warn(
+    `createSvgSpritePlugin is deprecated, use svgSpritePlugin instead`
+  );
+  return svgSpritePlugin(configOptions);
+}
+
+export function svgSpritePlugin(configOptions?: Config): Array<Plugin> {
   let config: ResolvedConfig;
   let options: Required<Config> = {
     spriteOutputName: "sprite.svg",
