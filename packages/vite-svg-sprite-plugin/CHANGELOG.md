@@ -81,4 +81,4 @@
 
 ### Patch Changes
 
-- 2fd42d8: rename exported function to `svgSpritePlugin`
+- 2fd42d8: rename exported function to `createSvgSpritePlugin`

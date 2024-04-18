@@ -11,13 +11,13 @@ npm i -D @mcansh/vite-svg-sprite-plugin
 this is an example using Remix, but this plugin works with any vite configuration
 
 ```ts
-import { svgSpritePlugin } from "@mcansh/vite-plugin-svg-sprite";
+import { svgSprite } from "@mcansh/vite-plugin-svg-sprite";
 import { vitePlugin as remix } from "@remix-run/dev";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  plugins: [remix(), tsconfigPaths(), svgSpritePlugin()],
+  plugins: [remix(), tsconfigPaths(), svgSprite()],
 });
 ```
 
@@ -25,7 +25,7 @@ you can configure the generated sprite file name as well as the generated symbol
 
 ```ts
 // these are the default options
-svgSpritePlugin({
+svgSprite({
   spriteOutputName: "sprite.svg",
   symbolId: "icon-[name]-[hash]",
 });
