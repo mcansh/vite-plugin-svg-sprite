@@ -39,7 +39,9 @@ import linkIconHref from "@primer/octicons/build/svg/link-16.svg";
 import type { LinksFunction } from "@remix-run/node";
 
 export const links: LinksFunction = () => {
-  return [{ rel: "preload", as: "image", href: spriteUrl, type: "image/svg+xml" }];
+  return [
+    { rel: "preload", as: "image", href: spriteUrl, type: "image/svg+xml" },
+  ];
 };
 
 export default function Component() {

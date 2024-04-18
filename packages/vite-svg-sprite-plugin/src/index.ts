@@ -7,7 +7,7 @@ import { hash } from "hasha";
 import svgo from "svgo";
 
 let svgRegex = /\.svg$/;
-let PLUGIN_NAME = "@mcansh/vite-svg-sprite-plugin";
+let PLUGIN_NAME = "@mcansh/vite-plugin-svg-sprite";
 
 let virtualModuleId = `virtual:${PLUGIN_NAME}`;
 let resolvedVirtualModuleId = "\0" + virtualModuleId;
