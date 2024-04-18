@@ -1,4 +1,4 @@
-# @mcansh/vite-svg-sprite-plugin
+# @mcansh/vite-plugin-svg-sprite
 
 ## 0.4.2
 

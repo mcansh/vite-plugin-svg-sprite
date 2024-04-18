@@ -79,4 +79,4 @@ jobs:
         uses: remix-run/release-comment-action@v0.4.1
         with:
           DIRECTORY_TO_CHECK: "./packages"
-          PACKAGE_NAME: "@mcansh/vite-svg-sprite-plugin"
+          PACKAGE_NAME: "@mcansh/vite-plugin-svg-sprite"
