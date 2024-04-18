@@ -29,19 +29,15 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
   return svgSprite(configOptions);
 }
 
-export let DEFAULT_SVGSTORE_OPTIONS: SVGStoreOptions = {
-  // use file name in symbol defs
-  renameDefs: true,
-  copyAttrs: [
-    "fill",
-    "stroke",
-    "stroke-width",
-    "stroke-linecap",
-    "stroke-linejoin",
-    "stroke-dasharray",
-    "stroke-dashoffset",
-  ],
-};
+export let DEFAULT_COPY_ATTRS = [
+  "fill",
+  "stroke",
+  "stroke-width",
+  "stroke-linecap",
+  "stroke-linejoin",
+  "stroke-dasharray",
+  "stroke-dashoffset",
+];
 
 export function svgSprite(configOptions?: Config): Array<Plugin> {
   let config: ResolvedConfig;
@@ -49,11 +45,13 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     spriteOutputName: "sprite.svg",
     symbolId: "icon-[name]-[hash]",
     logging: false,
-    svgstoreOptions: DEFAULT_SVGSTORE_OPTIONS,
+    svgstoreOptions: {},
     ...configOptions,
   };
 
   let store = svgstore({
+    renameDefs: true,
+    copyAttrs: DEFAULT_COPY_ATTRS,
     ...options.svgstoreOptions,
   });
   let icons = new Map<string, string>();
