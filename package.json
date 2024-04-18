@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "dev": "pnpm run --filter vite-svg-sprite-plugin --filter vite-remix --recursive --parallel dev",
+    "dev": "pnpm run --filter vite-plugin-svg-sprite --filter vite-remix --recursive --parallel dev",
     "build": "pnpm run --recursive build",
     "changeset": "changeset",
     "changeset:version": "changeset version && node ./scripts/remove-prerelease-changelogs.js && pnpm install --lockfile-only && node ./scripts/post-changeset.js",
