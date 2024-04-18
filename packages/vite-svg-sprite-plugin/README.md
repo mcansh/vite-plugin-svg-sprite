@@ -1,23 +1,23 @@
-# @mcansh/vite-svg-sprite-plugin
+# @mcansh/vite-plugin-svg-sprite
 
 this vite plugin will transform any imported svg files and combine them into an svg sprite sheet
 
 ## installation and set up
 
 ```sh
-npm i -D @mcansh/vite-svg-sprite-plugin
+npm i -D @mcansh/vite-plugin-svg-sprite
 ```
 
 this is an example using Remix, but this plugin works with any vite configuration
 
 ```ts
-import { svgSpritePlugin } from "@mcansh/vite-svg-sprite-plugin";
+import { svgSprite } from "@mcansh/vite-plugin-svg-sprite";
 import { vitePlugin as remix } from "@remix-run/dev";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  plugins: [remix(), tsconfigPaths(), svgSpritePlugin()],
+  plugins: [remix(), tsconfigPaths(), svgSprite()],
 });
 ```
 
@@ -25,7 +25,7 @@ you can configure the generated sprite file name as well as the generated symbol
 
 ```ts
 // these are the default options
-svgSpritePlugin({
+svgSprite({
   spriteOutputName: "sprite.svg",
   symbolId: "icon-[name]-[hash]",
 });
@@ -34,7 +34,7 @@ svgSpritePlugin({
 ## usage
 
 ```tsx
-import spriteUrl from "virtual:@mcansh/vite-svg-sprite-plugin";
+import spriteUrl from "virtual:@mcansh/vite-plugin-svg-sprite";
 import linkIconHref from "@primer/octicons/build/svg/link-16.svg";
 import type { LinksFunction } from "@remix-run/node";
 

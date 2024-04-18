@@ -24,9 +24,9 @@ type Config = {
 
 export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
   console.warn(
-    `createSvgSpritePlugin is deprecated, use svgSpritePlugin instead`
+    `createSvgSpritePlugin has been renamed to svgSprite, please update your imports as this will be removed in a future release.`
   );
-  return svgSpritePlugin(configOptions);
+  return svgSprite(configOptions);
 }
 
 export let DEFAULT_SVGSTORE_OPTIONS: SVGStoreOptions = {
@@ -43,7 +43,7 @@ export let DEFAULT_SVGSTORE_OPTIONS: SVGStoreOptions = {
   ],
 };
 
-export function svgSpritePlugin(configOptions?: Config): Array<Plugin> {
+export function svgSprite(configOptions?: Config): Array<Plugin> {
   let config: ResolvedConfig;
   let options: Required<Config> = {
     spriteOutputName: "sprite.svg",
