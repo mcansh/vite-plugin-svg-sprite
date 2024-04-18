@@ -2,7 +2,8 @@ import path from "node:path";
 
 import fse from "fs-extra";
 import svgstore from "svgstore";
-import { ResolvedConfig, Plugin } from "vite";
+import type { Options as SVGStoreOptions } from "svgstore";
+import type { ResolvedConfig, Plugin } from "vite";
 import { hash } from "hasha";
 import svgo from "svgo";
 
@@ -18,9 +19,17 @@ type Config = {
   spriteOutputName?: string;
   symbolId?: string;
   logging?: boolean;
+  svgstoreOptions?: SVGStoreOptions;
 };
 
-let store = svgstore({
+export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
+  console.warn(
+    `createSvgSpritePlugin is deprecated, use svgSpritePlugin instead`
+  );
+  return svgSpritePlugin(configOptions);
+}
+
+export let DEFAULT_SVGSTORE_OPTIONS: SVGStoreOptions = {
   // use file name in symbol defs
   renameDefs: true,
   copyAttrs: [
@@ -32,17 +41,7 @@ let store = svgstore({
     "stroke-dasharray",
     "stroke-dashoffset",
   ],
-});
-let icons = new Map<string, string>();
-let iconsAdded = new Set<string>();
-let referenceId: string | undefined;
-
-export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
-  console.warn(
-    `createSvgSpritePlugin is deprecated, use svgSpritePlugin instead`
-  );
-  return svgSpritePlugin(configOptions);
-}
+};
 
 export function svgSpritePlugin(configOptions?: Config): Array<Plugin> {
   let config: ResolvedConfig;
@@ -50,8 +49,16 @@ export function svgSpritePlugin(configOptions?: Config): Array<Plugin> {
     spriteOutputName: "sprite.svg",
     symbolId: "icon-[name]-[hash]",
     logging: false,
+    svgstoreOptions: DEFAULT_SVGSTORE_OPTIONS,
     ...configOptions,
   };
+
+  let store = svgstore({
+    ...options.svgstoreOptions,
+  });
+  let icons = new Map<string, string>();
+  let iconsAdded = new Set<string>();
+  let referenceId: string | undefined;
 
   async function addIconToSprite(id: string, content?: string) {
     if (!content) content = await fse.readFile(id, "utf-8");
