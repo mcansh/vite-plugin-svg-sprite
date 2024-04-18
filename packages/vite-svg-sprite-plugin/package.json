@@ -1,7 +1,10 @@
 {
-  "name": "@mcansh/vite-svg-sprite-plugin",
+  "name": "@mcansh/vite-plugin-svg-sprite",
   "version": "0.4.2",
-  "repository": "mcansh/vite-svg-sprite-plugin",
+  "repository": {
+    "url": "mcansh/vite-plugin-svg-sprite",
+    "directory": "packages/vite-plugin-svg-sprite"
+  },
   "funding": [
     {
       "type": "github",
