@@ -176,6 +176,15 @@ importers:
         specifier: ^5.2.7
         version: 5.2.9(@types/node@20.12.7)
 
+  packages/vite-svg-sprite-plugin:
+    dependencies:
+      '@mcansh/vite-plugin-svg-sprite':
+        specifier: workspace:*
+        version: link:../vite-plugin-svg-sprite
+      vite:
+        specifier: ^5.2.7
+        version: 5.2.9(@types/node@20.12.7)
+
 packages:
 
   '@aashutoshrathi/word-wrap@1.2.6':
