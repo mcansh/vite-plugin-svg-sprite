@@ -1,13 +1,17 @@
 import path from "node:path";
 import { execSync } from "node:child_process";
+import { glob } from "glob";
 import semver from "semver";
 import jsonfile from "jsonfile";
 import chalk from "chalk";
 import Confirm from "prompt-confirm";
 
-let packages = ["vite-plugin-svg-sprite"];
-
 let rootDir = path.join(import.meta.dirname, "..");
+let packageDir = path.join(rootDir, "packages");
+
+let packages = glob
+  .sync("./*/package.json", { cwd: packageDir })
+  .map((file) => path.dirname(file));
 
 run(process.argv.slice(2)).then(
   () => {
