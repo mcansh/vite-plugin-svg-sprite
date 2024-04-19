@@ -15,7 +15,7 @@ let resolvedVirtualModuleId = "\0" + virtualModuleId;
 
 let js = String.raw;
 
-type Config = {
+export type Config = {
   spriteOutputName?: string;
   symbolId?: string;
   logging?: boolean;
@@ -23,7 +23,7 @@ type Config = {
 };
 
 /**
- * @deprecated use svgSprite instead
+ * @deprecated - `createSvgSpritePlugin has been renamed to svgSprite, please update your imports as this will be removed in a future release.`
  */
 export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
   console.warn(
