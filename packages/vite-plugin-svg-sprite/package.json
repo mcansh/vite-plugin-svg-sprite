@@ -21,12 +21,13 @@
       "default": "./dist/index.js"
     },
     "./client": {
-      "types": "./dist/client.d.ts"
+      "types": "./client.d.ts"
     }
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
+    "client.d.ts",
     "dist",
     "package.json",
     "README.md"
