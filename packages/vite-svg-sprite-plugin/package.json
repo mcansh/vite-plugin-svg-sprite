@@ -1,6 +1,6 @@
 {
   "name": "@mcansh/vite-svg-sprite-plugin",
-  "version": "0.4.2",
+  "version": "0.0.0-experimental-f0dc16d",
   "repository": {
     "url": "mcansh/vite-plugin-svg-sprite",
     "directory": "packages/vite-svg-sprite-plugin"
@@ -38,7 +38,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@mcansh/vite-plugin-svg-sprite": "workspace:*"
+    "@mcansh/vite-plugin-svg-sprite": "0.0.0-experimental-f0dc16d"
   },
   "peerDependencies": {
     "vite": "^5.2.7"
