@@ -92,24 +92,8 @@ async function updatePackageConfig(packageName, transform) {
 async function updateVersion(packageName, nextVersion, successMessage) {
   await updatePackageConfig(packageName, (config) => {
     config.version = nextVersion;
-    for (let pkg of packages) {
-      let fullPackageName = `@mcansh/${pkg}`;
-      if (config.dependencies?.[fullPackageName]) {
-        config.dependencies[fullPackageName] = nextVersion;
-      }
-      if (config.devDependencies?.[fullPackageName]) {
-        config.devDependencies[fullPackageName] = nextVersion;
-      }
-      if (config.peerDependencies?.[fullPackageName]) {
-        let isRelaxedPeerDep =
-          config.peerDependencies[fullPackageName]?.startsWith("^");
-        config.peerDependencies[fullPackageName] = `${
-          isRelaxedPeerDep ? "^" : ""
-        }${nextVersion}`;
-      }
-    }
   });
-  let logName = `@mcansh/${packageName.slice(6)}`;
+  let logName = `@mcansh/${packageName}`;
   console.log(
     chalk.green(
       `  ${
