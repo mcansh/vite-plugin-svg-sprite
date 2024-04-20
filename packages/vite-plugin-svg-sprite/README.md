@@ -24,17 +24,22 @@ export default defineConfig({
 you can configure the generated sprite file name as well as the generated symbol id pattern
 
 ```ts
+import { defineConfig } from "vite";
 import { DEFAULT_COPY_ATTRS, svgSprite } from "@mcansh/vite-plugin-svg-sprite";
 
-svgSprite({
-  spriteOutputName: "sprite.svg",
-  symbolId: "icon-[name]-[hash]",
-  svgstoreOptions: {
-    copyAttrs: [
-      ...DEFAULT_COPY_ATTRS,
-      // any additional attributes you want to copy from the svg to the symbol
-    ],
-  },
+export default defineConfig({
+  plugins: [
+    svgSprite({
+      spriteOutputName: "sprite.svg",
+      symbolId: "icon-[name]-[hash]",
+      svgstoreOptions: {
+        copyAttrs: [
+          ...DEFAULT_COPY_ATTRS,
+          // any additional attributes you want to copy from the svg to the symbol
+        ],
+      },
+    }),
+  ],
 });
 ```
 

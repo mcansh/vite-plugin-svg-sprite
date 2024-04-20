@@ -5,10 +5,10 @@ this vite plugin will transform any imported svg files and combine them into an 
 ## installation and set up
 
 ```sh
-  npm i -D @mcansh/vite-svg-sprite-plugin
+npm i -D @mcansh/vite-svg-sprite-plugin
 ```
 
-this is an example using Remix, but this plugin should work everywhere else as well
+this is an example using Remix, but this plugin works with any vite configuration
 
 ```ts
 import { createSvgSpritePlugin } from "@mcansh/vite-svg-sprite-plugin";
@@ -24,11 +24,22 @@ export default defineConfig({
 you can configure the generated sprite file name as well as the generated symbol id pattern
 
 ```ts
+import { defineConfig } from "vite";
 import { createSvgSpritePlugin } from "@mcansh/vite-svg-sprite-plugin";
 
-createSvgSpritePlugin({
-  spriteOutputName: "sprite.svg",
-  symbolId: "icon-[name]-[hash]",
+export default defineConfig({
+  plugins: [
+    createSvgSpritePlugin({
+      spriteOutputName: "sprite.svg",
+      symbolId: "icon-[name]-[hash]",
+      svgstoreOptions: {
+        copyAttrs: [
+          ...DEFAULT_COPY_ATTRS,
+          // any additional attributes you want to copy from the svg to the symbol
+        ],
+      },
+    }),
+  ],
 });
 ```
 
