@@ -9,23 +9,18 @@
     "publish": "./scripts/publish.js"
   },
   "dependencies": {
-    "@changesets/cli": "^2.27.1",
-    "@manypkg/get-packages": "^2.2.1",
-    "@npmcli/package-json": "^5.0.0",
-    "@types/node": "^20.12.2",
+    "@changesets/cli": "^2.27.9",
+    "@manypkg/get-packages": "^2.2.2",
+    "@npmcli/package-json": "^6.0.1",
+    "@types/node": "^22.7.9",
     "@types/npmcli__package-json": "^4.0.4",
     "chalk": "^5.3.0",
-    "glob": "^10.3.12",
+    "glob": "^11.0.0",
     "jsonfile": "^6.1.0",
     "pkg-pr-new": "^0.0.29",
     "prompt-confirm": "^2.0.4",
-    "semver": "^7.6.0",
-    "typescript": "^5.4.3"
+    "semver": "^7.6.3",
+    "typescript": "^5.6.3"
   },
-  "packageManager": "pnpm@9.12.2+sha512.22721b3a11f81661ae1ec68ce1a7b879425a1ca5b991c975b074ac220b187ce56c708fe5db69f4c962c989452eee76c82877f4ee80f474cebd61ee13461b6228",
-  "pnpm": {
-    "patchedDependencies": {
-      "@changesets/assemble-release-plan@6.0.0": "patches/@changesets__assemble-release-plan@6.0.0.patch"
-    }
-  }
+  "packageManager": "pnpm@9.12.2+sha512.22721b3a11f81661ae1ec68ce1a7b879425a1ca5b991c975b074ac220b187ce56c708fe5db69f4c962c989452eee76c82877f4ee80f474cebd61ee13461b6228"
 }
