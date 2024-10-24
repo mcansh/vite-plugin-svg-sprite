@@ -1,0 +1,49 @@
+name: 🚀 Release (preview)
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ./packages/*
+    tags:
+      - "!**"
+  pull_request:
+    branches: [main]
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⎔ Enable corepack
+        run: corepack enable
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
+
+      - name: 🟧 Install dependencies
+        run: pnpm install --recursive --frozen-lockfile --strict-peer-dependencies
+
+      - name: 🔐 Setup npm auth
+        run: |
+          echo "registry=https://registry.npmjs.org" >> ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+
+      - name: 🟧 Set publish-branch to current branch
+        run: |
+          echo "publish-branch=$(git branch --show-current)" >> ~/.npmrc
+
+      - name: 🏗️ Build
+        run: pnpm run build
+
+      - name: 📦 Package
+        run: pnpm run attw
+
+      - name: 🚀 Publish PR
+        run: pnpx pkg-pr-new publish --compact './packages/*' --template './examples/*'
