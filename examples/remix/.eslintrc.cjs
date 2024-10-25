@@ -20,6 +20,9 @@ module.exports = {
     es6: true,
   },
   ignorePatterns: ["!**/.server", "!**/.client"],
+  rules:{
+    'import/no-unresolved': ['error', { ignore: ['^virtual:'] }],
+  },
 
   // Base config
   extends: ["eslint:recommended"],
@@ -59,7 +62,7 @@ module.exports = {
         "import/internal-regex": "^~/",
         "import/resolver": {
           node: {
-            extensions: [".ts", ".tsx"],
+            extensions: [".ts", ".tsx", ".svg"],
           },
           typescript: {
             alwaysTryTypes: true,
