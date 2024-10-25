@@ -17,8 +17,8 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
     },
     "./client": {
       "types": "./client.d.ts"
@@ -33,9 +33,10 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsup",
     "dev": "tsc --watch",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "attw": "attw --pack ./ --ignore-rules cjs-resolves-to-esm"
   },
   "dependencies": {
     "fs-extra": "^11.2.0",
