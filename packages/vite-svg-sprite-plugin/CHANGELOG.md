@@ -1,5 +1,14 @@
 # @mcansh/vite-plugin-svg-sprite
 
+## 0.5.0
+
+### Patch Changes
+
+- 7c4cd7b: extend peerDependencies for vite to include v6
+- Updated dependencies [7c4cd7b]
+- Updated dependencies [c8408c2]
+  - @mcansh/vite-plugin-svg-sprite@0.5.0
+
 ## 0.4.2
 
 ### Patch Changes

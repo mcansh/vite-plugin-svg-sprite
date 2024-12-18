@@ -1,5 +1,17 @@
 # @mcansh/vite-plugin-svg-sprite
 
+## 0.5.0
+
+### Minor Changes
+
+- c8408c2: rename package to `@mcansh/vite-plugin-svg-sprite`
+  rename plugin to `svgSprite`
+  allow passing additional options to forward to svgstore
+
+### Patch Changes
+
+- 7c4cd7b: extend peerDependencies for vite to include v6
+
 ## 0.4.2
 
 ### Patch Changes
