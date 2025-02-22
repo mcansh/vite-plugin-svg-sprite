@@ -7,7 +7,8 @@
     "changeset": "changeset",
     "changeset:version": "changeset version && node ./scripts/remove-prerelease-changelogs.js && pnpm install --lockfile-only && node ./scripts/post-changeset.js",
     "changeset:release": "pnpm run build && changeset publish",
-    "publish": "./scripts/publish.js"
+    "publish": "./scripts/publish.js",
+    "format": "prettier --ignore-path .gitignore --ignore-path .prettierignore --cache --ignore-unknown --write ."
   },
   "dependencies": {
     "@arethetypeswrong/cli": "^0.17.4",

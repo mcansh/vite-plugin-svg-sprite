@@ -35,8 +35,6 @@ export default function Index() {
       {icons.map((icon) => {
         return <Icon key={icon} icon={icon} width={100} height={100} />;
       })}
-
-
     </div>
   );
 }

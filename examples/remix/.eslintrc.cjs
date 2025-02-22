@@ -20,8 +20,8 @@ module.exports = {
     es6: true,
   },
   ignorePatterns: ["!**/.server", "!**/.client"],
-  rules:{
-    'import/no-unresolved': ['error', { ignore: ['^virtual:'] }],
+  rules: {
+    "import/no-unresolved": ["error", { ignore: ["^virtual:"] }],
   },
 
   // Base config
