@@ -12,6 +12,12 @@ export default defineConfig({
     tailwindcss(),
     reactRouter(),
     tsconfigPaths(),
-    svgSprite({ logging: true }),
+    svgSprite({
+    	logging: true,
+     	unstable_environment_api: {
+      	ssr: "server",
+       client: "client",
+      }
+    }),
   ],
 });

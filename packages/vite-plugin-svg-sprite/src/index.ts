@@ -15,14 +15,14 @@ let resolvedVirtualModuleId = "\0" + virtualModuleId;
 
 let js = String.raw;
 
-export type Config = {
-  spriteOutputName?: string;
-  symbolId?: string;
-  logging?: boolean;
-  svgstoreOptions?: SVGStoreOptions;
-  /** mapping of environments to their output directories */
-  unstable_environment_api?: Record<string, string>;
-};
+export type Config = Partial<{
+	spriteOutputName: string;
+	symbolId: string;
+	logging: boolean;
+	svgstoreOptions: SVGStoreOptions;
+	/** mapping of environments to their output directories */
+	unstable_environment_api: Record<string, string>;
+}>;
 
 /**
  * @deprecated - `createSvgSpritePlugin has been renamed to svgSprite, please update your imports as this will be removed in a future release.`
@@ -52,10 +52,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     symbolId: "icon-[name]-[hash]",
     logging: false,
     svgstoreOptions: {},
-    unstable_environment_api: {
-      ssr: "server",
-      client: "client",
-    },
+		unstable_environment_api: {},
     ...configOptions,
   };
 
@@ -163,6 +160,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
 
       configResolved(resolvedConfig) {
         config = resolvedConfig;
+        console.dir({config}, {depth: null})
       },
 
       async transform(_code, id) {

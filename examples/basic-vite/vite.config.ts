@@ -4,5 +4,5 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   build: { assetsDir: "something-other-than-assets" },
-  plugins: [react(), createSvgSpritePlugin()],
+	plugins: [react(), createSvgSpritePlugin({ logging: true })],
 });
