@@ -1,11 +1,11 @@
 import path from "node:path";
 
 import fse from "fs-extra";
-import svgstore from "svgstore";
-import type { Options as SVGStoreOptions } from "svgstore";
-import type { ResolvedConfig, Plugin } from "vite";
 import { hash } from "hasha";
 import svgo from "svgo";
+import type { Options as SVGStoreOptions } from "svgstore";
+import svgstore from "svgstore";
+import type { Plugin, ResolvedConfig } from "vite";
 
 let svgRegex = /\.svg$/;
 let PLUGIN_NAME = "@mcansh/vite-plugin-svg-sprite";
@@ -27,7 +27,7 @@ export type Config = {
  */
 export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
   console.warn(
-    `createSvgSpritePlugin has been renamed to svgSprite, please update your imports as this will be removed in a future release.`
+    `createSvgSpritePlugin has been renamed to svgSprite, please update your imports as this will be removed in a future release.`,
   );
 
   return svgSprite(configOptions);
@@ -111,36 +111,9 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     return { data: optimized.data, spriteHash };
   }
 
-  function log(...args: any[]) {
-    print("log", ...args);
-  }
-
-  function warn(...args: any[]) {
-    print("warn", ...args);
-  }
-
-  function error(...args: any[]) {
-    print("error", ...args);
-  }
-
-  function print(type: "log" | "warn" | "error", ...args: any[]) {
-    if (options.logging === false) return;
-    switch (type) {
-      case "log":
-        console.log(`[${PLUGIN_NAME}]`, ...args);
-        break;
-      case "warn":
-        console.warn(`[${PLUGIN_NAME}]`, ...args);
-        break;
-      case "error":
-        console.error(`[${PLUGIN_NAME}]`, ...args);
-        break;
-    }
-  }
-
   return [
     {
-      name: PLUGIN_NAME,
+      name: `${PLUGIN_NAME}:resolve`,
 
       resolveId(id) {
         if (id === virtualModuleId) {
@@ -180,125 +153,24 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           name: options.spriteOutputName,
         });
       },
+    },
 
-      async generateBundle(_, bundle) {
-        if (!referenceId) {
-          warn(`referenceId not found, skipping`);
-          return;
+    {
+      name: `${PLUGIN_NAME}:client`,
+      transform(_code, id) {
+        console.log({id, referenceId});
+        if (id === `/${config.build.assetsDir}/${options.spriteOutputName}`) {
+
+          return {
+            code: `export default "import.meta.ROLLUP_FILE_URL_referenceId";`,
+            map: { mappings: "" },
+          };
         }
-
-        for (let id in bundle) {
-          let chunk = bundle[id];
-          if (!chunk) {
-            warn(`chunk not found for id ${id}, skipping`);
-            continue;
-          }
-
-          if (chunk.type === "chunk") {
-            let referenceFileName = `/${this.getFileName(referenceId)}`;
-
-            let content = chunk.code;
-
-            let currentSpriteUrl = `/${config.build.assetsDir}/${options.spriteOutputName}`;
-
-            log({ currentSpriteUrl });
-
-            // check if content has current sprite url
-            let currentSpriteUrlRegex = new RegExp(currentSpriteUrl, "g");
-            let matches = content.match(currentSpriteUrlRegex);
-
-            if (!matches) continue;
-
-            let newContent = content.replace(
-              currentSpriteUrlRegex,
-              referenceFileName
-            );
-            log(
-              `found current sprite url in file ${chunk.fileName}, replacing with ${referenceFileName}`
-            );
-
-            // write new content to file in a temp location to avoid it being overwritten
-            // then compare output sans our changes to the original file
-            // if they are the same, we can overwrite the original file
-            // if they are different, we can throw an error
-
-            let tempChunkFileName = path.join(config.cacheDir, chunk.fileName);
-            await fse.outputFile(tempChunkFileName, newContent);
-
-            log(`wrote to temp file ${tempChunkFileName}`);
-          }
-        }
-      },
-
-      async writeBundle(_, bundle) {
-        if (!referenceId) {
-          warn(`referenceId not found, skipping`);
-          return;
-        }
-
-        for (let id in bundle) {
-          let chunk = bundle[id];
-          if (!chunk) {
-            warn(`chunk not found for id ${id}, skipping`);
-            continue;
-          }
-
-          // we can skip the svg
-          if (svgRegex.test(chunk.fileName)) {
-            warn(`skipping svg file ${chunk.fileName}`);
-            continue;
-          }
-
-          // read content of original file and temp file
-          // if they are the same sans our changes, we can overwrite the original file
-          // if they are different, we can throw an error
-          let originalFileName = path.join(config.build.outDir, chunk.fileName);
-          let tempFileName = path.join(config.cacheDir, chunk.fileName);
-
-          log({ originalFileName, tempFileName });
-
-          if (!(await fse.pathExists(tempFileName))) {
-            continue;
-          }
-
-          let originalContent = await fse.readFile(originalFileName, "utf-8");
-          let tempContent = await fse.readFile(tempFileName, "utf-8");
-
-          let currentSpriteUrl = `/${config.build.assetsDir}/${options.spriteOutputName}`;
-          let currentSpriteUrlRegex = new RegExp(currentSpriteUrl, "g");
-
-          let referenceFileName = `/${this.getFileName(referenceId)}`;
-          let referenceFileNameRegex = new RegExp(referenceFileName, "g");
-
-          let originalMatches = originalContent.match(currentSpriteUrlRegex);
-          let tempMatches = tempContent.match(referenceFileNameRegex);
-
-          if (!originalMatches || !tempMatches) {
-            warn(`original or temp file does not contain sprite url, skipping`);
-            continue;
-          }
-
-          // replace the sprite url from the original content again
-          // so we can compare the two
-          let newOriginalContent = originalContent.replace(
-            currentSpriteUrlRegex,
-            referenceFileName
-          );
-
-          if (newOriginalContent !== tempContent) {
-            error(
-              `original file ${originalFileName} and temp file ${tempFileName} are different`
-            );
-
-            continue;
-          }
-
-          // overwrite the original file
-          await fse.outputFile(originalFileName, tempContent);
-          log(`overwrote original file ${originalFileName}`);
-        }
-      },
-
+      }
+    },
+    {
+      name: `${PLUGIN_NAME}:dev`,
+      apply: 'serve',
       configureServer(server) {
         server.middlewares.use(async (req, res, next) => {
           if (
@@ -314,6 +186,6 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           return next();
         });
       },
-    },
+    }
   ];
 }

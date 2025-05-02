@@ -1,10 +1,10 @@
-import path from "node:path";
-import { execSync } from "node:child_process";
-import { glob } from "glob";
-import semver from "semver";
-import jsonfile from "jsonfile";
 import chalk from "chalk";
+import { glob } from "glob";
+import jsonfile from "jsonfile";
+import { execSync } from "node:child_process";
+import path from "node:path";
 import Confirm from "prompt-confirm";
+import semver from "semver";
 
 let rootDir = path.join(import.meta.dirname, "..");
 let packageDir = path.join(rootDir, "packages");
@@ -20,7 +20,7 @@ run(process.argv.slice(2)).then(
   (error) => {
     console.error(error);
     process.exit(1);
-  }
+  },
 );
 
 /**
@@ -42,7 +42,7 @@ async function run(args) {
   // Confirm the next version number
   if (prereleaseId !== "--skip-prompt") {
     let answer = await prompt(
-      `Are you sure you want to bump version ${currentVersion} to ${nextVersion}? [Yn] `
+      `Are you sure you want to bump version ${currentVersion} to ${nextVersion}? [Yn] `,
     );
     if (answer === false) return 0;
   }
@@ -99,8 +99,8 @@ async function updateVersion(packageName, nextVersion, successMessage) {
       `  ${
         successMessage ||
         `Updated ${chalk.bold(logName)} to version ${chalk.bold(nextVersion)}`
-      }`
-    )
+      }`,
+    ),
   );
 }
 
@@ -141,7 +141,7 @@ function ensureCleanWorkingDirectory() {
   let lines = status.split("\n");
   if (!lines.every((line) => line === "" || line.startsWith("?"))) {
     console.error(
-      "Working directory is not clean. Please commit or stash your changes."
+      "Working directory is not clean. Please commit or stash your changes.",
     );
     process.exit(1);
   }

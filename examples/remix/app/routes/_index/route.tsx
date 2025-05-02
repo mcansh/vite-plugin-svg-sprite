@@ -1,8 +1,8 @@
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
-import spriteUrl from "virtual:@mcansh/vite-plugin-svg-sprite";
 import beakerIconHref from "heroicons/24/outline/beaker.svg";
 import eyeIconHref from "lucide-static/icons/eye.svg";
 import houseIconHref from "lucide-static/icons/house.svg";
+import spriteUrl from "virtual:@mcansh/vite-plugin-svg-sprite";
 import archiveBoxArrowDownIconHref from "~/assets/archive-box-arrow-down.svg";
 import { Icon } from "./icon";
 

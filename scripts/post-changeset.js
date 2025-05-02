@@ -1,7 +1,7 @@
+import PackageJson from "@npmcli/package-json";
+import { glob } from "glob";
 import fs from "node:fs";
 import path from "node:path";
-import { glob } from "glob";
-import PackageJson from "@npmcli/package-json";
 
 let __dirname = path.dirname(new URL(import.meta.url).pathname);
 let rootDir = path.resolve(__dirname, "..");

@@ -39,6 +39,7 @@
     "attw": "attw --pack ./ --ignore-rules cjs-resolves-to-esm"
   },
   "dependencies": {
+    "chokidar": "^4.0.3",
     "fs-extra": "^11.3.0",
     "hasha": "^6.0.0",
     "svgo": "^3.3.2",
