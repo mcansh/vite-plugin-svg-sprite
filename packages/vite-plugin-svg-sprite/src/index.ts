@@ -20,6 +20,8 @@ export type Config = {
   symbolId?: string;
   logging?: boolean;
   svgstoreOptions?: SVGStoreOptions;
+  /** mapping of environments to their output directories */
+  unstable_environment_api?: Record<string, string>;
 };
 
 /**
@@ -50,6 +52,10 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     symbolId: "icon-[name]-[hash]",
     logging: false,
     svgstoreOptions: {},
+    unstable_environment_api: {
+      ssr: "server",
+      client: "client",
+    },
     ...configOptions,
   };
 
@@ -220,7 +226,14 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
             // if they are the same, we can overwrite the original file
             // if they are different, we can throw an error
 
-            let tempChunkFileName = path.join(config.cacheDir, chunk.fileName);
+            let assetDir =
+              options.unstable_environment_api[this.environment.name] ?? "";
+
+            let tempChunkFileName = path.join(
+              config.cacheDir,
+              assetDir,
+              chunk.fileName,
+            );
             await fse.outputFile(tempChunkFileName, newContent);
 
             log(`wrote to temp file ${tempChunkFileName}`);
@@ -247,33 +260,22 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
             continue;
           }
 
+          let assetDir =
+            options.unstable_environment_api[this.environment.name] ?? "";
+
           // read content of original file and temp file
           // if they are the same sans our changes, we can overwrite the original file
           // if they are different, we can throw an error
-          let originalFileName = path.join(config.build.outDir, chunk.fileName);
-          let tempFileName = path.join(config.cacheDir, chunk.fileName);
-
-          // TODO: figure out how to get the client|server in the original lookup
-          if (!(await fse.pathExists(originalFileName))) {
-            log(`original file ${originalFileName} does not exist, retrying..`);
-            originalFileName = path.join(
-              config.build.outDir,
-              "client",
-              chunk.fileName,
-            );
-          }
-          if (!(await fse.pathExists(originalFileName))) {
-            log(`original file ${originalFileName} does not exist, retrying..`);
-            originalFileName = path.join(
-              config.build.outDir,
-              "server",
-              chunk.fileName,
-            );
-          }
-          if (!(await fse.pathExists(originalFileName))) {
-            log(`original file ${originalFileName} does not exist, skipping`);
-            continue;
-          }
+          let originalFileName = path.join(
+            config.build.outDir,
+            assetDir,
+            chunk.fileName,
+          );
+          let tempFileName = path.join(
+            config.cacheDir,
+            assetDir,
+            chunk.fileName,
+          );
 
           log({ originalFileName, tempFileName });
 
