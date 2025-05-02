@@ -16,12 +16,12 @@ let resolvedVirtualModuleId = "\0" + virtualModuleId;
 let js = String.raw;
 
 export type Config = Partial<{
-	spriteOutputName: string;
-	symbolId: string;
-	logging: boolean;
-	svgstoreOptions: SVGStoreOptions;
-	/** mapping of environments to their output directories */
-	unstable_environment_api: Record<string, string>;
+  spriteOutputName: string;
+  symbolId: string;
+  logging: boolean;
+  svgstoreOptions: SVGStoreOptions;
+  /** mapping of environments to their output directories */
+  unstable_environment_api: Record<string, string>;
 }>;
 
 /**
@@ -52,7 +52,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     symbolId: "icon-[name]-[hash]",
     logging: false,
     svgstoreOptions: {},
-		unstable_environment_api: {},
+    unstable_environment_api: {},
     ...configOptions,
   };
 
@@ -160,7 +160,6 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
 
       configResolved(resolvedConfig) {
         config = resolvedConfig;
-        console.dir({config}, {depth: null})
       },
 
       async transform(_code, id) {

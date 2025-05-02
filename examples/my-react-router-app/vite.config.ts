@@ -13,11 +13,11 @@ export default defineConfig({
     reactRouter(),
     tsconfigPaths(),
     svgSprite({
-    	logging: true,
-     	unstable_environment_api: {
-      	ssr: "server",
-       client: "client",
-      }
+      logging: true,
+      unstable_environment_api: {
+        ssr: "server",
+        client: "client",
+      },
     }),
   ],
 });
