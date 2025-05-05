@@ -1,6 +1,6 @@
 {
   "name": "@mcansh/vite-svg-sprite-plugin",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "repository": {
     "url": "mcansh/vite-plugin-svg-sprite",
     "directory": "packages/vite-svg-sprite-plugin"

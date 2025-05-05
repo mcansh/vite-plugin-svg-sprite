@@ -1,5 +1,16 @@
 # @mcansh/vite-plugin-svg-sprite
 
+## 0.6.0
+
+### Minor Changes
+
+- bd0715f: add support for vite environment api
+
+### Patch Changes
+
+- Updated dependencies [bd0715f]
+  - @mcansh/vite-plugin-svg-sprite@0.6.0
+
 ## 0.5.0
 
 ### Patch Changes
