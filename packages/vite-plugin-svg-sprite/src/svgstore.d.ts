@@ -63,7 +63,7 @@ declare module "svgstore" {
          * @default false
          */
         inline?: boolean;
-      }
+      },
     ) => string;
   };
 

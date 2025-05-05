@@ -1,6 +1,6 @@
+import blendingModeIconHref from "@radix-ui/icons/icons/blending-mode.svg";
 import { useState } from "react";
 import archiveBoxArrowDownIconHref from "./archive-box-arrow-down.svg";
-import blendingModeIconHref from "@radix-ui/icons/icons/blending-mode.svg";
 
 export const App = () => {
   const [count, setCount] = useState(0);

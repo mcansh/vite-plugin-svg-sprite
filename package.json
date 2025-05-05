@@ -7,24 +7,34 @@
     "changeset": "changeset",
     "changeset:version": "changeset version && node ./scripts/remove-prerelease-changelogs.js && pnpm install --lockfile-only && node ./scripts/post-changeset.js",
     "changeset:release": "pnpm run build && changeset publish",
-    "publish": "./scripts/publish.js"
+    "publish": "./scripts/publish.js",
+    "format": "prettier --ignore-path .gitignore --ignore-path .prettierignore --cache --ignore-unknown --write ."
   },
   "dependencies": {
-    "@arethetypeswrong/cli": "^0.16.4",
-    "@changesets/cli": "^2.27.9",
-    "@manypkg/get-packages": "^2.2.2",
-    "@npmcli/package-json": "^6.0.1",
+    "@arethetypeswrong/cli": "^0.17.4",
+    "@changesets/cli": "^2.29.2",
+    "@manypkg/get-packages": "^3.0.0",
+    "@npmcli/package-json": "^6.1.1",
     "@total-typescript/tsconfig": "^1.0.4",
-    "@types/node": "^22.8.0",
+    "@types/node": "^22.15.3",
     "@types/npmcli__package-json": "^4.0.4",
-    "chalk": "^5.3.0",
-    "glob": "^11.0.0",
+    "chalk": "^5.4.1",
+    "glob": "^11.0.2",
     "jsonfile": "^6.1.0",
-    "pkg-pr-new": "^0.0.29",
+    "pkg-pr-new": "^0.0.43",
+    "prettier": "^3.5.3",
+    "prettier-plugin-organize-imports": "^4.1.0",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "prompt-confirm": "^2.0.4",
-    "semver": "^7.6.3",
-    "tsup": "^8.3.4",
-    "typescript": "^5.6.3"
+    "semver": "^7.7.1",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.3"
   },
-  "packageManager": "pnpm@9.12.2+sha512.22721b3a11f81661ae1ec68ce1a7b879425a1ca5b991c975b074ac220b187ce56c708fe5db69f4c962c989452eee76c82877f4ee80f474cebd61ee13461b6228"
+  "packageManager": "pnpm@10.10.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@swc/core",
+      "esbuild"
+    ]
+  }
 }

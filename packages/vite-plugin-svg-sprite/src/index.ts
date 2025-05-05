@@ -1,11 +1,11 @@
 import path from "node:path";
 
 import fse from "fs-extra";
-import svgstore from "svgstore";
-import type { Options as SVGStoreOptions } from "svgstore";
-import type { ResolvedConfig, Plugin } from "vite";
 import { hash } from "hasha";
 import svgo from "svgo";
+import type { Options as SVGStoreOptions } from "svgstore";
+import svgstore from "svgstore";
+import type { Plugin, ResolvedConfig } from "vite";
 
 let svgRegex = /\.svg$/;
 let PLUGIN_NAME = "@mcansh/vite-plugin-svg-sprite";
@@ -15,12 +15,12 @@ let resolvedVirtualModuleId = "\0" + virtualModuleId;
 
 let js = String.raw;
 
-export type Config = {
-  spriteOutputName?: string;
-  symbolId?: string;
-  logging?: boolean;
-  svgstoreOptions?: SVGStoreOptions;
-};
+export type Config = Partial<{
+  spriteOutputName: string;
+  symbolId: string;
+  logging: boolean;
+  svgstoreOptions: SVGStoreOptions;
+}>;
 
 /**
  * @deprecated - `createSvgSpritePlugin has been renamed to svgSprite, please update your imports as this will be removed in a future release.`
@@ -141,6 +141,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
   return [
     {
       name: PLUGIN_NAME,
+      sharedDuringBuild: true,
 
       resolveId(id) {
         if (id === virtualModuleId) {
@@ -196,9 +197,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
 
           if (chunk.type === "chunk") {
             let referenceFileName = `/${this.getFileName(referenceId)}`;
-
             let content = chunk.code;
-
             let currentSpriteUrl = `/${config.build.assetsDir}/${options.spriteOutputName}`;
 
             log({ currentSpriteUrl });
@@ -252,7 +251,10 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           // read content of original file and temp file
           // if they are the same sans our changes, we can overwrite the original file
           // if they are different, we can throw an error
-          let originalFileName = path.join(config.build.outDir, chunk.fileName);
+          let originalFileName = path.join(
+            this.environment.config.build.outDir,
+            chunk.fileName
+          );
           let tempFileName = path.join(config.cacheDir, chunk.fileName);
 
           log({ originalFileName, tempFileName });
