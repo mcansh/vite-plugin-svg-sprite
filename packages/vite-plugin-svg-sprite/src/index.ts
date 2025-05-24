@@ -18,6 +18,10 @@ let js = String.raw;
 export type Config = Partial<{
   spriteOutputName: string;
   symbolId: string;
+  /**
+  * @deprecated - use Vite's built in --logLevel instead
+  * @see https://vite.dev/config/shared-options.html#loglevel
+  */
   logging: boolean;
   svgstoreOptions: SVGStoreOptions;
 }>;
@@ -52,6 +56,12 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     svgstoreOptions: {},
     ...configOptions,
   };
+
+  if (options.logging) {
+    console.warn(
+      `[${PLUGIN_NAME}]: the \`logging\` has been deprecated and will be removed in a future release. Please use Vite's built-in logLevel instead.`,
+    );
+  }
 
   let store = svgstore({
     renameDefs: true,
@@ -171,7 +181,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
             let content = chunk.code;
             let currentSpriteUrl = `/${config.build.assetsDir}/${options.spriteOutputName}`;
 
-            this.info(JSON.stringify({ currentSpriteUrl }));
+            this.debug(JSON.stringify({ currentSpriteUrl }));
 
             // check if content has current sprite url
             let currentSpriteUrlRegex = new RegExp(currentSpriteUrl, "g");
@@ -183,7 +193,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
               currentSpriteUrlRegex,
               referenceFileName,
             );
-            this.info(
+            this.debug(
               `found current sprite url in file ${chunk.fileName}, replacing with ${referenceFileName}`,
             );
 
@@ -195,7 +205,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
             let tempChunkFileName = path.join(config.cacheDir, chunk.fileName);
             await fse.outputFile(tempChunkFileName, newContent);
 
-            this.info(`wrote to temp file ${tempChunkFileName}`);
+            this.debug(`wrote to temp file ${tempChunkFileName}`);
           }
         }
       },
@@ -228,7 +238,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           );
           let tempFileName = path.join(config.cacheDir, chunk.fileName);
 
-          this.info(JSON.stringify({ originalFileName, tempFileName }));
+          this.debug(JSON.stringify({ originalFileName, tempFileName }));
 
           if (!(await fse.pathExists(tempFileName))) {
             continue;
@@ -270,7 +280,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
 
           // overwrite the original file
           await fse.outputFile(originalFileName, tempContent);
-          this.info(`overwrote original file ${originalFileName}`);
+          this.debug(`overwrote original file ${originalFileName}`);
         }
       },
 
