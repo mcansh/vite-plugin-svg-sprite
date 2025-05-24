@@ -27,7 +27,7 @@ export type Config = Partial<{
  */
 export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
   console.warn(
-    `createSvgSpritePlugin has been renamed to svgSprite, please update your imports as this will be removed in a future release.`
+    `createSvgSpritePlugin has been renamed to svgSprite, please update your imports as this will be removed in a future release.`,
   );
 
   return svgSprite(configOptions);
@@ -172,7 +172,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
         }
       },
 
-      async buildEnd() {
+      async generateBundle(_, bundle) {
         let { data } = await getSpriteHash();
 
         referenceId = this.emitFile({
@@ -180,9 +180,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           source: data,
           name: options.spriteOutputName,
         });
-      },
 
-      async generateBundle(_, bundle) {
         if (!referenceId) {
           warn(`referenceId not found, skipping`);
           return;
@@ -210,10 +208,10 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
 
             let newContent = content.replace(
               currentSpriteUrlRegex,
-              referenceFileName
+              referenceFileName,
             );
             log(
-              `found current sprite url in file ${chunk.fileName}, replacing with ${referenceFileName}`
+              `found current sprite url in file ${chunk.fileName}, replacing with ${referenceFileName}`,
             );
 
             // write new content to file in a temp location to avoid it being overwritten
@@ -253,7 +251,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           // if they are different, we can throw an error
           let originalFileName = path.join(
             this.environment.config.build.outDir,
-            chunk.fileName
+            chunk.fileName,
           );
           let tempFileName = path.join(config.cacheDir, chunk.fileName);
 
@@ -284,12 +282,12 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           // so we can compare the two
           let newOriginalContent = originalContent.replace(
             currentSpriteUrlRegex,
-            referenceFileName
+            referenceFileName,
           );
 
           if (newOriginalContent !== tempContent) {
             error(
-              `original file ${originalFileName} and temp file ${tempFileName} are different`
+              `original file ${originalFileName} and temp file ${tempFileName} are different`,
             );
 
             continue;
