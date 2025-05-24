@@ -2,6 +2,7 @@ import { svgSprite } from "@mcansh/vite-plugin-svg-sprite";
 import { vitePlugin as remix } from "@remix-run/dev";
 import { installGlobals } from "@remix-run/node";
 import { defineConfig } from "vite";
+import inspect from "vite-plugin-inspect";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 installGlobals();
@@ -14,5 +15,6 @@ export default defineConfig({
       logging: true,
       spriteOutputName: "mysvgsprite.svg",
     }),
+    inspect(),
   ],
 });

@@ -9,6 +9,5 @@ export default {
     unstable_splitRouteModules: true,
     unstable_viteEnvironmentApi: true,
     unstable_middleware: true,
-    unstable_subResourceIntegrity: true,
   },
 } satisfies Config;

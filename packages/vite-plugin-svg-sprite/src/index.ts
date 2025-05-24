@@ -18,6 +18,10 @@ let js = String.raw;
 export type Config = Partial<{
   spriteOutputName: string;
   symbolId: string;
+  /**
+  * @deprecated - use Vite's built in --logLevel instead
+  * @see https://vite.dev/config/shared-options.html#loglevel
+  */
   logging: boolean;
   svgstoreOptions: SVGStoreOptions;
 }>;
@@ -27,7 +31,7 @@ export type Config = Partial<{
  */
 export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
   console.warn(
-    `createSvgSpritePlugin has been renamed to svgSprite, please update your imports as this will be removed in a future release.`
+    `createSvgSpritePlugin has been renamed to svgSprite, please update your imports as this will be removed in a future release.`,
   );
 
   return svgSprite(configOptions);
@@ -52,6 +56,12 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     svgstoreOptions: {},
     ...configOptions,
   };
+
+  if (options.logging) {
+    console.warn(
+      `[${PLUGIN_NAME}]: the \`logging\` has been deprecated and will be removed in a future release. Please use Vite's built-in logLevel instead.`,
+    );
+  }
 
   let store = svgstore({
     renameDefs: true,
@@ -111,33 +121,6 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     return { data: optimized.data, spriteHash };
   }
 
-  function log(...args: any[]) {
-    print("log", ...args);
-  }
-
-  function warn(...args: any[]) {
-    print("warn", ...args);
-  }
-
-  function error(...args: any[]) {
-    print("error", ...args);
-  }
-
-  function print(type: "log" | "warn" | "error", ...args: any[]) {
-    if (options.logging === false) return;
-    switch (type) {
-      case "log":
-        console.log(`[${PLUGIN_NAME}]`, ...args);
-        break;
-      case "warn":
-        console.warn(`[${PLUGIN_NAME}]`, ...args);
-        break;
-      case "error":
-        console.error(`[${PLUGIN_NAME}]`, ...args);
-        break;
-    }
-  }
-
   return [
     {
       name: PLUGIN_NAME,
@@ -172,7 +155,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
         }
       },
 
-      async buildEnd() {
+      async generateBundle(_, bundle) {
         let { data } = await getSpriteHash();
 
         referenceId = this.emitFile({
@@ -180,18 +163,16 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           source: data,
           name: options.spriteOutputName,
         });
-      },
 
-      async generateBundle(_, bundle) {
         if (!referenceId) {
-          warn(`referenceId not found, skipping`);
+          this.warn(`referenceId not found, skipping`);
           return;
         }
 
         for (let id in bundle) {
           let chunk = bundle[id];
           if (!chunk) {
-            warn(`chunk not found for id ${id}, skipping`);
+            this.warn(`chunk not found for id ${id}, skipping`);
             continue;
           }
 
@@ -200,7 +181,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
             let content = chunk.code;
             let currentSpriteUrl = `/${config.build.assetsDir}/${options.spriteOutputName}`;
 
-            log({ currentSpriteUrl });
+            this.debug(JSON.stringify({ currentSpriteUrl }));
 
             // check if content has current sprite url
             let currentSpriteUrlRegex = new RegExp(currentSpriteUrl, "g");
@@ -210,10 +191,10 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
 
             let newContent = content.replace(
               currentSpriteUrlRegex,
-              referenceFileName
+              referenceFileName,
             );
-            log(
-              `found current sprite url in file ${chunk.fileName}, replacing with ${referenceFileName}`
+            this.debug(
+              `found current sprite url in file ${chunk.fileName}, replacing with ${referenceFileName}`,
             );
 
             // write new content to file in a temp location to avoid it being overwritten
@@ -224,27 +205,27 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
             let tempChunkFileName = path.join(config.cacheDir, chunk.fileName);
             await fse.outputFile(tempChunkFileName, newContent);
 
-            log(`wrote to temp file ${tempChunkFileName}`);
+            this.debug(`wrote to temp file ${tempChunkFileName}`);
           }
         }
       },
 
       async writeBundle(_, bundle) {
         if (!referenceId) {
-          warn(`referenceId not found, skipping`);
+          this.warn(`referenceId not found, skipping`);
           return;
         }
 
         for (let id in bundle) {
           let chunk = bundle[id];
           if (!chunk) {
-            warn(`chunk not found for id ${id}, skipping`);
+            this.warn(`chunk not found for id ${id}, skipping`);
             continue;
           }
 
           // we can skip the svg
           if (svgRegex.test(chunk.fileName)) {
-            warn(`skipping svg file ${chunk.fileName}`);
+            this.warn(`skipping svg file ${chunk.fileName}`);
             continue;
           }
 
@@ -253,11 +234,11 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           // if they are different, we can throw an error
           let originalFileName = path.join(
             this.environment.config.build.outDir,
-            chunk.fileName
+            chunk.fileName,
           );
           let tempFileName = path.join(config.cacheDir, chunk.fileName);
 
-          log({ originalFileName, tempFileName });
+          this.debug(JSON.stringify({ originalFileName, tempFileName }));
 
           if (!(await fse.pathExists(tempFileName))) {
             continue;
@@ -276,7 +257,9 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           let tempMatches = tempContent.match(referenceFileNameRegex);
 
           if (!originalMatches || !tempMatches) {
-            warn(`original or temp file does not contain sprite url, skipping`);
+            this.warn(
+              `original or temp file does not contain sprite url, skipping`,
+            );
             continue;
           }
 
@@ -284,12 +267,12 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           // so we can compare the two
           let newOriginalContent = originalContent.replace(
             currentSpriteUrlRegex,
-            referenceFileName
+            referenceFileName,
           );
 
           if (newOriginalContent !== tempContent) {
-            error(
-              `original file ${originalFileName} and temp file ${tempFileName} are different`
+            this.error(
+              `original file ${originalFileName} and temp file ${tempFileName} are different`,
             );
 
             continue;
@@ -297,7 +280,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
 
           // overwrite the original file
           await fse.outputFile(originalFileName, tempContent);
-          log(`overwrote original file ${originalFileName}`);
+          this.debug(`overwrote original file ${originalFileName}`);
         }
       },
 
