@@ -171,7 +171,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
             let content = chunk.code;
             let currentSpriteUrl = `/${config.build.assetsDir}/${options.spriteOutputName}`;
 
-            this.debug(JSON.stringify({ currentSpriteUrl }))
+            this.info(JSON.stringify({ currentSpriteUrl }));
 
             // check if content has current sprite url
             let currentSpriteUrlRegex = new RegExp(currentSpriteUrl, "g");
@@ -183,7 +183,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
               currentSpriteUrlRegex,
               referenceFileName,
             );
-            this.debug(
+            this.info(
               `found current sprite url in file ${chunk.fileName}, replacing with ${referenceFileName}`,
             );
 
@@ -195,7 +195,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
             let tempChunkFileName = path.join(config.cacheDir, chunk.fileName);
             await fse.outputFile(tempChunkFileName, newContent);
 
-            this.debug(`wrote to temp file ${tempChunkFileName}`);
+            this.info(`wrote to temp file ${tempChunkFileName}`);
           }
         }
       },
@@ -228,7 +228,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           );
           let tempFileName = path.join(config.cacheDir, chunk.fileName);
 
-          this.debug(JSON.stringify({ originalFileName, tempFileName }));
+          this.info(JSON.stringify({ originalFileName, tempFileName }));
 
           if (!(await fse.pathExists(tempFileName))) {
             continue;
@@ -247,7 +247,9 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           let tempMatches = tempContent.match(referenceFileNameRegex);
 
           if (!originalMatches || !tempMatches) {
-            this.warn(`original or temp file does not contain sprite url, skipping`);
+            this.warn(
+              `original or temp file does not contain sprite url, skipping`,
+            );
             continue;
           }
 
@@ -268,7 +270,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
 
           // overwrite the original file
           await fse.outputFile(originalFileName, tempContent);
-          this.debug(`overwrote original file ${originalFileName}`);
+          this.info(`overwrote original file ${originalFileName}`);
         }
       },
 
