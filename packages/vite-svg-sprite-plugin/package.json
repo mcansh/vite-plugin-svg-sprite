@@ -34,10 +34,9 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "dev": "tsc --watch",
-    "prepublishOnly": "npm run build",
-    "attw": "attw --pack ./ --ignore-rules cjs-resolves-to-esm"
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@mcansh/vite-plugin-svg-sprite": "workspace:*"

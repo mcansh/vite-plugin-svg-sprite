@@ -3,7 +3,6 @@
   "scripts": {
     "dev": "pnpm run --filter vite-plugin-svg-sprite --filter vite-remix --recursive --parallel dev",
     "build": "pnpm run --recursive build",
-    "attw": "pnpm run --recursive attw",
     "changeset": "changeset",
     "changeset:version": "changeset version && node ./scripts/remove-prerelease-changelogs.js && pnpm install --lockfile-only && node ./scripts/post-changeset.js",
     "changeset:release": "pnpm run build && changeset publish",
@@ -11,29 +10,31 @@
     "format": "prettier --ignore-path .gitignore --ignore-path .prettierignore --cache --ignore-unknown --write ."
   },
   "dependencies": {
-    "@arethetypeswrong/cli": "^0.17.4",
-    "@changesets/cli": "^2.29.2",
+    "@arethetypeswrong/cli": "^0.18.2",
+    "@changesets/cli": "^2.29.5",
     "@manypkg/get-packages": "^3.0.0",
-    "@npmcli/package-json": "^6.1.1",
+    "@npmcli/package-json": "^6.2.0",
     "@total-typescript/tsconfig": "^1.0.4",
-    "@types/node": "^22.15.3",
+    "@types/node": "^24.0.4",
     "@types/npmcli__package-json": "^4.0.4",
     "chalk": "^5.4.1",
-    "glob": "^11.0.2",
+    "glob": "^11.0.3",
     "jsonfile": "^6.1.0",
-    "pkg-pr-new": "^0.0.43",
-    "prettier": "^3.5.3",
+    "pkg-pr-new": "^0.0.53",
+    "prettier": "^3.6.0",
     "prettier-plugin-organize-imports": "^4.1.0",
-    "prettier-plugin-tailwindcss": "^0.6.11",
+    "prettier-plugin-tailwindcss": "^0.6.13",
     "prompt-confirm": "^2.0.4",
-    "semver": "^7.7.1",
-    "tsup": "^8.4.0",
+    "publint": "^0.3.12",
+    "semver": "^7.7.2",
+    "tsdown": "^0.12.8",
     "typescript": "^5.8.3"
   },
   "packageManager": "pnpm@10.12.3+sha512.467df2c586056165580ad6dfb54ceaad94c5a30f80893ebdec5a44c5aa73c205ae4a5bb9d5ed6bb84ea7c249ece786642bbb49d06a307df218d03da41c317417",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@swc/core",
+      "@tailwindcss/oxide",
       "esbuild",
       "unrs-resolver"
     ]
