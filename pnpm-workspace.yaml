@@ -1,6 +1,8 @@
 packages:
-  - "packages/*"
-  - "examples/*"
+  - packages/*
+  - examples/*
 
-catalog:
-  vite-plugin-inspect: "^11.1.0"
+onlyBuiltDependencies:
+  - "@swc/core"
+  - esbuild
+  - unrs-resolver

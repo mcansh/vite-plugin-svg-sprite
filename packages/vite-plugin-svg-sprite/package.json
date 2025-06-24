@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
-    "vite": "^6.3.4"
+    "vite": "^7.0.0"
   },
   "peerDependencies": {
     "vite": "^5.2.7 || ^6.0.0 || ^7.0.0"
