@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@mcansh/vite-plugin-svg-sprite": "workspace:*",
-    "@radix-ui/icons": "https://gitpkg.now.sh/radix-ui/icons/packages/radix-icons?master",
+    "@radix-ui/icons": "https://gitpkg.vercel.app/radix-ui/icons/packages/radix-icons?master",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react-swc": "^3.10.2",

@@ -79,8 +79,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/vite-plugin-svg-sprite
       '@radix-ui/icons':
-        specifier: https://gitpkg.now.sh/radix-ui/icons/packages/radix-icons?master
-        version: '@radix-ui/react-icons@https://gitpkg.now.sh/radix-ui/icons/packages/radix-icons?master(react@19.1.0)'
+        specifier: https://gitpkg.vercel.app/radix-ui/icons/packages/radix-icons?master
+        version: '@radix-ui/react-icons@https://gitpkg.vercel.app/radix-ui/icons/packages/radix-icons?master(react@19.1.0)'
       '@types/react':
         specifier: ^19.1.8
         version: 19.1.8
@@ -1355,8 +1355,8 @@ packages:
       '@types/react-dom':
         optional: true
 
-  '@radix-ui/react-icons@https://gitpkg.now.sh/radix-ui/icons/packages/radix-icons?master':
-    resolution: {tarball: https://gitpkg.now.sh/radix-ui/icons/packages/radix-icons?master}
+  '@radix-ui/react-icons@https://gitpkg.vercel.app/radix-ui/icons/packages/radix-icons?master':
+    resolution: {tarball: https://gitpkg.vercel.app/radix-ui/icons/packages/radix-icons?master}
     version: 1.3.2
     peerDependencies:
       react: ^16.x || ^17.x || ^18.x || ^19.0.0 || ^19.0.0-rc
@@ -7798,7 +7798,7 @@ snapshots:
       '@types/react': 19.1.8
       '@types/react-dom': 19.1.6(@types/react@19.1.8)
 
-  '@radix-ui/react-icons@https://gitpkg.now.sh/radix-ui/icons/packages/radix-icons?master(react@19.1.0)':
+  '@radix-ui/react-icons@https://gitpkg.vercel.app/radix-ui/icons/packages/radix-icons?master(react@19.1.0)':
     dependencies:
       react: 19.1.0
 
