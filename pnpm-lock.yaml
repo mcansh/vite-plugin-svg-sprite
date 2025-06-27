@@ -76,7 +76,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/vite-plugin-svg-sprite
       '@radix-ui/icons':
-        specifier: https://gitpkg.now.sh/radix-ui/icons/packages/radix-icons?master
+        specifier: https://gitpkg.vercel.app/radix-ui/icons/packages/radix-icons?master
         version: '@radix-ui/react-icons@https://gitpkg.vercel.app/radix-ui/icons/packages/radix-icons?master(react@19.1.0)'
       '@types/react':
         specifier: ^19.1.2
