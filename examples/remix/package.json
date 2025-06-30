@@ -37,7 +37,7 @@
     "lucide-static": "^0.525.0",
     "typescript": "^5.8.3",
     "vite": "^7.0.0",
-    "vite-plugin-inspect": "^11.1.0",
+    "vite-plugin-inspect": "^11.3.0",
     "vite-tsconfig-paths": "^5.1.4"
   },
   "engines": {
