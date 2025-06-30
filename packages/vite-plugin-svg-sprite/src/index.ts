@@ -26,8 +26,8 @@ export type Config = Partial<{
   svgstoreOptions: SVGStoreOptions;
 }>;
 
-export function createSvgSpritePlugin(configOptions: Config): Array<Plugin> {
-	let logger = createLogger(configOptions.logging ? "info" : undefined);
+export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
+	let logger = createLogger(configOptions?.logging ? "info" : undefined);
   return [
     {
       name: `${PLUGIN_NAME}:deprecation`,
