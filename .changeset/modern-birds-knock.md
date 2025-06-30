@@ -1,5 +1,5 @@
 ---
-"@mcansh/vite-plugin-svg-sprite": minir
+"@mcansh/vite-plugin-svg-sprite": minor
 ---
 
 move emitFile call to generateBundle, remove buildEnd hook
