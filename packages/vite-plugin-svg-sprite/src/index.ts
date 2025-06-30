@@ -4,7 +4,7 @@ import path from "node:path";
 import * as svgo from "svgo";
 import type { Options as SVGStoreOptions } from "svgstore";
 import svgstore from "svgstore";
-import type { Logger, Plugin, ResolvedConfig } from "vite";
+import type { Plugin, ResolvedConfig } from "vite";
 import { createLogger } from "vite";
 
 let svgRegex = /\.svg$/;
@@ -27,7 +27,7 @@ export type Config = Partial<{
 }>;
 
 export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
-	let logger = createLogger(configOptions?.logging ? "info" : undefined);
+  let logger = createLogger(configOptions?.logging ? "info" : undefined);
   return [
     {
       name: `${PLUGIN_NAME}:deprecation`,
@@ -51,8 +51,6 @@ export let DEFAULT_COPY_ATTRS = [
   "stroke-dashoffset",
 ];
 
-let logger: Logger;
-
 export function svgSprite(configOptions?: Config): Array<Plugin> {
   let config: ResolvedConfig;
   let options: Required<Config> = {
@@ -63,7 +61,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     ...configOptions,
   };
 
-  logger = logger ??= createLogger(options.logging ? "info" : undefined);
+  const logger = createLogger(options.logging ? "info" : undefined);
 
   if (options.logging) {
     logger.warnOnce(
