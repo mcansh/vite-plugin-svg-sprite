@@ -1,11 +1,11 @@
-import path from "node:path";
-
 import fse from "fs-extra";
 import { hash } from "hasha";
+import path from "node:path";
 import * as svgo from "svgo";
 import type { Options as SVGStoreOptions } from "svgstore";
 import svgstore from "svgstore";
-import type { Plugin, ResolvedConfig } from "vite";
+import type { Logger, Plugin, ResolvedConfig } from "vite";
+import { createLogger } from "vite";
 
 let svgRegex = /\.svg$/;
 let PLUGIN_NAME = "@mcansh/vite-plugin-svg-sprite";
@@ -19,22 +19,26 @@ export type Config = Partial<{
   spriteOutputName: string;
   symbolId: string;
   /**
-  * @deprecated - use Vite's built in --logLevel instead
-  * @see https://vite.dev/config/shared-options.html#loglevel
-  */
+   * @deprecated - use Vite's built in --logLevel instead
+   * @see https://vite.dev/config/shared-options.html#loglevel
+   */
   logging: boolean;
   svgstoreOptions: SVGStoreOptions;
 }>;
 
-/**
- * @deprecated - `createSvgSpritePlugin has been renamed to svgSprite, please update your imports as this will be removed in a future release.`
- */
-export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
-  console.warn(
-    `createSvgSpritePlugin has been renamed to svgSprite, please update your imports as this will be removed in a future release.`,
-  );
-
-  return svgSprite(configOptions);
+export function createSvgSpritePlugin(configOptions: Config): Array<Plugin> {
+	let logger = createLogger(configOptions.logging ? "info" : undefined);
+  return [
+    {
+      name: `${PLUGIN_NAME}:deprecation`,
+      buildStart() {
+        logger.warnOnce(
+          `createSvgSpritePlugin has been renamed to svgSprite, please update your imports as this will be removed in a future release.`,
+        );
+      },
+    },
+    ...svgSprite(configOptions),
+  ];
 }
 
 export let DEFAULT_COPY_ATTRS = [
@@ -47,6 +51,8 @@ export let DEFAULT_COPY_ATTRS = [
   "stroke-dashoffset",
 ];
 
+let logger: Logger;
+
 export function svgSprite(configOptions?: Config): Array<Plugin> {
   let config: ResolvedConfig;
   let options: Required<Config> = {
@@ -57,8 +63,10 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     ...configOptions,
   };
 
+  logger = logger ??= createLogger(options.logging ? "info" : undefined);
+
   if (options.logging) {
-    console.warn(
+    logger.warnOnce(
       `[${PLUGIN_NAME}]: the \`logging\` has been deprecated and will be removed in a future release. Please use Vite's built-in logLevel instead.`,
     );
   }
