@@ -1,5 +1,22 @@
 # @mcansh/vite-plugin-svg-sprite
 
+## 0.7.0
+
+### Minor Changes
+
+- 151437f: move emitFile call to generateBundle, remove buildEnd hook
+  removed internal logging option in favor of LOG_LEVEL environment variable
+
+### Patch Changes
+
+- c92a424: chore: refactor deprecation warnings to use Vite logger API
+
+  create a custom logger and set logLevel to “info” when logging: true is set for the plugin
+
+- 90c1605: add vite 7 support
+- 0f01e5b: bump internal svgo usage to v4
+- 93ffcbc: migrate from tsup to tsdown for bundling
+
 ## 0.6.0
 
 ### Minor Changes
