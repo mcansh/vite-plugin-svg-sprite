@@ -42,8 +42,5 @@ jobs:
       - name: 🏗️ Build
         run: pnpm run build
 
-      - name: 📦 Package
-        run: pnpm run attw
-
       - name: 🚀 Publish PR
         run: pnpx pkg-pr-new publish './packages/*' --template './examples/*'
