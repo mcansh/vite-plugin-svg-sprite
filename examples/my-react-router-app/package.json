@@ -30,8 +30,8 @@
     "react-router-devtools": "^5.0.6",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.3",
-    "vite": "^6.3.4",
-    "vite-plugin-inspect": "catalog:",
+    "vite": "^7.0.0",
+    "vite-plugin-inspect": "^11.3.0",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }
