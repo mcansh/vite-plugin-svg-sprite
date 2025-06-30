@@ -2,7 +2,7 @@ import path from "node:path";
 
 import fse from "fs-extra";
 import { hash } from "hasha";
-import svgo from "svgo";
+import * as svgo from "svgo";
 import type { Options as SVGStoreOptions } from "svgstore";
 import svgstore from "svgstore";
 import type { Plugin, ResolvedConfig } from "vite";
