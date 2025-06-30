@@ -3,7 +3,7 @@ packages:
   - examples/*
 
 onlyBuiltDependencies:
-  - '@swc/core'
-  - '@tailwindcss/oxide'
+  - "@swc/core"
+  - "@tailwindcss/oxide"
   - esbuild
   - unrs-resolver
