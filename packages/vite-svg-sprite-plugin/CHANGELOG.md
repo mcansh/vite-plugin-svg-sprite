@@ -1,5 +1,16 @@
 # @mcansh/vite-plugin-svg-sprite
 
+## 0.6.1
+
+### Patch Changes
+
+- Updated dependencies [c92a424]
+- Updated dependencies [90c1605]
+- Updated dependencies [151437f]
+- Updated dependencies [0f01e5b]
+- Updated dependencies [93ffcbc]
+  - @mcansh/vite-plugin-svg-sprite@0.7.0
+
 ## 0.6.0
 
 ### Minor Changes
