@@ -289,7 +289,13 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           this.debug(`overwrote original file ${originalFileName}`);
         }
       },
-
+    },
+    {
+      name: `${PLUGIN_NAME}:dev-server`,
+      sharedDuringBuild: true,
+      apply(config, env) {
+        return env.command === "serve";
+      },
       configureServer(server) {
         server.middlewares.use(async (req, res, next) => {
           if (
