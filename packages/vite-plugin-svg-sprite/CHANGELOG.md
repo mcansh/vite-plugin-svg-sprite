@@ -1,5 +1,13 @@
 # @mcansh/vite-plugin-svg-sprite
 
+## 0.7.1
+
+### Patch Changes
+
+- 04da9b9: split dev middleware out of main plugin to silence
+  `context method emitFile() is not supported in serve mode. This plugin is likely not vite-compatible.`
+  warning
+
 ## 0.7.0
 
 ### Minor Changes
