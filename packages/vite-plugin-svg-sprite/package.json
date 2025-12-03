@@ -26,7 +26,12 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["client.d.ts", "dist", "package.json", "README.md"],
+  "files": [
+    "client.d.ts",
+    "dist",
+    "package.json",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsdown",
     "dev": "tsc --watch",
