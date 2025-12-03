@@ -1,4 +1,3 @@
-import blendingModeIconHref from "@radix-ui/icons/icons/blending-mode.svg";
 import { useState } from "react";
 import archiveBoxArrowDownIconHref from "./archive-box-arrow-down.svg";
 
@@ -11,12 +10,10 @@ export const App = () => {
         <svg width="100" height="100" aria-hidden>
           <use href={archiveBoxArrowDownIconHref} />
         </svg>
-
-        <svg width="100" height="100" aria-hidden>
-          <use href={blendingModeIconHref} />
-        </svg>
       </div>
-      <button onClick={() => setCount(count + 1)}>count is {count}</button>
+      <button onClick={() => setCount((old) => old + 1)}>
+        count is {count}
+      </button>
     </div>
   );
 };
