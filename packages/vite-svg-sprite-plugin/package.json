@@ -27,12 +27,7 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "client.d.ts",
-    "dist",
-    "package.json",
-    "README.md"
-  ],
+  "files": ["client.d.ts", "dist", "package.json", "README.md"],
   "scripts": {
     "build": "tsdown",
     "dev": "tsc --watch",
@@ -42,7 +37,7 @@
     "@mcansh/vite-plugin-svg-sprite": "workspace:*"
   },
   "peerDependencies": {
-    "vite": "^5.2.7 || ^6.0.0 || ^7.0.0"
+    "vite": "^5.0.0-0 || ^6.0.0-0 || ^7.0.0-0 || ^8.0.0-0"
   },
   "engines": {
     "node": ">=18.0.0"
