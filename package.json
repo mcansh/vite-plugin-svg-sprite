@@ -18,7 +18,7 @@
     "@types/node": "^24.0.8",
     "@types/npmcli__package-json": "^4.0.4",
     "chalk": "^5.4.1",
-    "glob": "^11.0.3",
+    "glob": "^11.1.0",
     "jsonfile": "^6.1.0",
     "pkg-pr-new": "^0.0.54",
     "prettier": "^3.6.2",
