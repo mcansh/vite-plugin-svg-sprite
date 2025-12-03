@@ -1,6 +1,6 @@
 ---
-"@mcansh/vite-plugin-svg-sprite": minor
-"@mcansh/vite-svg-sprite-plugin": minor
+"@mcansh/vite-plugin-svg-sprite": patch
+"@mcansh/vite-svg-sprite-plugin": patch
 ---
 
 feat: support vite 8
