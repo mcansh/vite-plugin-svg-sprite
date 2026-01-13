@@ -149,8 +149,11 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
         config = resolvedConfig;
       },
 
-      async transform(_code, id) {
-        if (svgRegex.test(id)) {
+      transform: {
+        filter: {
+          id: /\.svg$/,
+        },
+        async handler(_code, id) {
           let spriteUrl = `/${config.build.assetsDir}/${options.spriteOutputName}`;
           let symbolId = await addIconToSprite(id);
 
@@ -158,7 +161,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
             code: js`export default "${spriteUrl}#${symbolId}";`,
             map: { mappings: "" },
           };
-        }
+        },
       },
 
       async generateBundle(_, bundle) {
