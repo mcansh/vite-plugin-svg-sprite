@@ -26,6 +26,13 @@ export type Config = Partial<{
   svgstoreOptions: SVGStoreOptions;
 }>;
 
+type ClientBuildRecord = {
+  outDir: string;
+  spriteFileName: string;
+  files: Array<string>;
+  icons: Array<[symbolId: string, content: string]>;
+};
+
 export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
   let logger = createLogger(configOptions?.logging ? "info" : undefined);
   return [
@@ -77,6 +84,54 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
   let icons = new Map<string, string>();
   let iconsAdded = new Set<string>();
   let referenceId: string | undefined;
+
+  // The client is built before the server, so the client sprite can't contain
+  // icons that are only imported by server code. The client build records what
+  // it wrote, and a later server build merges the client's icons into its own
+  // sprite, copies that sprite into the client build and points the client
+  // files at it. The record is kept on disk because the client and server
+  // builds don't always share a plugin instance (e.g. React Router without the
+  // Vite Environment API runs them as separate Vite builds).
+  let clientBuildUpdate = Promise.resolve();
+
+  function getClientBuildRecordPath() {
+    return path.join(config.cacheDir, PLUGIN_NAME, "client-build.json");
+  }
+
+  async function readClientBuildRecord(): Promise<ClientBuildRecord | null> {
+    let recordPath = getClientBuildRecordPath();
+    if (!(await fse.pathExists(recordPath))) return null;
+    let record: ClientBuildRecord = await fse.readJson(recordPath);
+    // ignore a record left behind by a client build whose output is gone
+    let spritePath = path.join(record.outDir, record.spriteFileName);
+    if (!(await fse.pathExists(spritePath))) return null;
+    return record;
+  }
+
+  async function updateClientBuild(
+    serverSpritePath: string,
+    spriteFileName: string,
+  ) {
+    let record = await readClientBuildRecord();
+    if (!record || record.spriteFileName === spriteFileName) return;
+
+    await fse.copy(serverSpritePath, path.join(record.outDir, spriteFileName));
+
+    for (let file of record.files) {
+      if (!(await fse.pathExists(file))) continue;
+      let content = await fse.readFile(file, "utf-8");
+      await fse.outputFile(
+        file,
+        content.replaceAll(`/${record.spriteFileName}`, `/${spriteFileName}`),
+      );
+    }
+
+    await fse.remove(path.join(record.outDir, record.spriteFileName));
+    await fse.outputJson(getClientBuildRecordPath(), {
+      ...record,
+      spriteFileName,
+    });
+  }
 
   async function addIconToSprite(id: string, content?: string) {
     if (!content) content = await fse.readFile(id, "utf-8");
@@ -162,6 +217,15 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
       },
 
       async generateBundle(_, bundle) {
+        // include icons that only the client build saw (e.g. ones imported
+        // in client-only modules) so the server sprite has every icon
+        if (this.environment?.config.consumer === "server") {
+          let record = await readClientBuildRecord();
+          for (let [symbolId, content] of record?.icons ?? []) {
+            if (!icons.has(symbolId)) icons.set(symbolId, content);
+          }
+        }
+
         let { data } = await getSpriteHash();
 
         referenceId = this.emitFile({
@@ -221,6 +285,11 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           this.warn(`referenceId not found, skipping`);
           return;
         }
+
+        let isServer = this.environment.config.consumer === "server";
+        let outDir = path.resolve(this.environment.config.build.outDir);
+        let spriteFileName = this.getFileName(referenceId);
+        let rewrittenFiles: Array<string> = [];
 
         for (let id in bundle) {
           let chunk = bundle[id];
@@ -287,7 +356,27 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           // overwrite the original file
           await fse.outputFile(originalFileName, tempContent);
           this.debug(`overwrote original file ${originalFileName}`);
+
+          rewrittenFiles.push(path.resolve(originalFileName));
         }
+
+        if (!isServer) {
+          let record: ClientBuildRecord = {
+            outDir,
+            spriteFileName,
+            files: rewrittenFiles,
+            icons: Array.from(icons),
+          };
+          await fse.outputJson(getClientBuildRecordPath(), record);
+          return;
+        }
+
+        // the server sprite has every icon, including ones that are only
+        // imported on the server, so point the client build at it
+        clientBuildUpdate = clientBuildUpdate.then(() =>
+          updateClientBuild(path.join(outDir, spriteFileName), spriteFileName),
+        );
+        await clientBuildUpdate;
       },
     },
     {
