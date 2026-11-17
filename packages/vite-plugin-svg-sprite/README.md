@@ -59,3 +59,14 @@ export default function Component() {
   );
 }
 ```
+
+## server rendering (react router, remix, ssr builds)
+
+when the client is built before the server (as react router and remix do), the client build writes a small record of its sprite to `<cacheDir>/@mcansh/vite-plugin-svg-sprite/client-build.json` (`node_modules/.vite` by default).
+
+the server build reads that record and:
+
+- points icons that are already in the client sprite at the client sprite, so server rendered html and the client bundle reference the same file
+- puts icons that are only imported by server code (e.g. returned from a `loader`) into a separate sprite and copies it into the client `outDir` so the browser can load it
+
+the server build never changes client files or the client sprite. the record is only used when it comes from a client build of the same project root whose sprite still exists, and a new client build replaces it.
