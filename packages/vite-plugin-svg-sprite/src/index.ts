@@ -145,25 +145,46 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     return path.join(config.cacheDir, PLUGIN_NAME, "client-build.json");
   }
 
+  function warnUnreadableRecord(reason: unknown) {
+    config.logger.warn(
+      `[${PLUGIN_NAME}] ignoring unreadable ${getClientBuildRecordPath()}: ${String(reason)}`,
+    );
+  }
+
+  function isClientBuildRecord(value: unknown): value is ClientBuildRecord {
+    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+      return false;
+    }
+    let record = value as Record<string, unknown>;
+    return (
+      typeof record.root === "string" &&
+      typeof record.outDir === "string" &&
+      typeof record.spriteFileName === "string" &&
+      Array.isArray(record.symbolIds) &&
+      record.symbolIds.every((id) => typeof id === "string")
+    );
+  }
+
   async function readClientBuildRecord(): Promise<ClientBuildRecord | null> {
-    let record: ClientBuildRecord;
+    let parsed: unknown;
     try {
-      record = await fse.readJson(getClientBuildRecordPath());
+      parsed = await fse.readJson(getClientBuildRecordPath());
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
-        config.logger.warn(
-          `[${PLUGIN_NAME}] ignoring unreadable ${getClientBuildRecordPath()}: ${String(error)}`,
-        );
+        warnUnreadableRecord(error);
       }
       return null;
     }
 
-    // only use a record from a client build of this project whose output is
-    // still there
-    if (record.root !== config.root) return null;
-    let clientSprite = path.join(record.outDir, record.spriteFileName);
+    if (!isClientBuildRecord(parsed)) {
+      warnUnreadableRecord("invalid client build record");
+      return null;
+    }
+
+    if (parsed.root !== config.root) return null;
+    let clientSprite = path.join(parsed.outDir, parsed.spriteFileName);
     if (!(await fse.pathExists(clientSprite))) return null;
-    return record;
+    return parsed;
   }
 
   async function addIconToSprite(id: string) {
@@ -254,8 +275,9 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
 
       async buildStart() {
         if (config.command !== "build") return;
-        // a new client build replaces whatever an earlier one recorded
-        if (!getBuildTarget(this.environment).isServer) {
+        let target = getBuildTarget(this.environment);
+        environmentIcons.set(target.name, new Map());
+        if (!target.isServer) {
           await fse.remove(getClientBuildRecordPath());
         }
       },
