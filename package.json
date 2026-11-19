@@ -1,5 +1,8 @@
 {
   "type": "module",
+  "engines": {
+    "node": "24"
+  },
   "scripts": {
     "dev": "pnpm run --filter vite-plugin-svg-sprite --filter vite-remix --recursive --parallel dev",
     "build": "pnpm run --recursive build",
@@ -11,7 +14,7 @@
   },
   "dependencies": {
     "@arethetypeswrong/cli": "^0.18.2",
-    "@changesets/cli": "^2.29.5",
+    "@changesets/cli": "^3.0.3",
     "@manypkg/get-packages": "^3.0.0",
     "@npmcli/package-json": "^6.2.0",
     "@total-typescript/tsconfig": "^1.0.4",

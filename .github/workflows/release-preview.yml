@@ -1,46 +1,39 @@
 name: 🚀 Release (preview)
 on:
   push:
-    branches:
-      - main
-    paths:
-      - ./packages/*
-    tags:
-      - "!**"
+    branches: [dev, main]
   pull_request:
-    branches: [dev]
+    branches: [dev, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   preview:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: ⎔ Enable corepack
-        run: corepack enable
-
-      - name: ⎔ Setup node
-        uses: actions/setup-node@v4
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node-version-file: ".nvmrc"
-          cache: "pnpm"
+          persist-credentials: false
 
-      - name: 🟧 Install dependencies
-        run: pnpm install --recursive --frozen-lockfile --strict-peer-dependencies
+      - name: Set up Node.js and pnpm
+        uses: ./.github/actions/setup-toolchain
 
-      - name: 🔐 Setup npm auth
-        run: |
-          echo "registry=https://registry.npmjs.org" >> ~/.npmrc
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --strict-peer-dependencies
 
-      - name: 🟧 Set publish-branch to current branch
-        run: |
-          echo "publish-branch=$(git branch --show-current)" >> ~/.npmrc
-
-      - name: 🏗️ Build
+      - name: Build packages and examples
         run: pnpm run build
 
-      - name: 🚀 Publish PR
-        run: pnpx pkg-pr-new publish './packages/*' --template './examples/*'
+      - name: Publish preview
+        if: >-
+          github.repository == 'mcansh/vite-plugin-svg-sprite' &&
+          (github.ref == 'refs/heads/main' || github.base_ref == 'dev')
+        run: pnpm exec pkg-pr-new publish --pnpm './packages/*' --template './examples/*'

@@ -17,18 +17,20 @@ jobs:
       CI: "true"
       WRANGLER_SEND_METRICS: "false"
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # Format the PR head so fixes apply cleanly when it is behind main.
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - uses: nubjs/setup-nub@v0
-        with:
-          nub-version: "0.9.3"
-          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Set up Node.js and pnpm
+        uses: ./.github/actions/setup-toolchain
 
       - name: Install dependencies
-        run: nub install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --strict-peer-dependencies
 
-      - run: nub run format
+      - name: Format code
+        run: pnpm run format
 
-      - uses: autofix-ci/action@v1
+      - name: Submit formatting fixes
+        uses: autofix-ci/action@v1
