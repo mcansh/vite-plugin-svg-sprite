@@ -80,6 +80,18 @@ export let DEFAULT_COPY_ATTRS = [
   "stroke-dashoffset",
 ];
 
+function isClientBuildRecord(value: unknown): value is ClientBuildRecord {
+  if (typeof value !== "object" || value === null) return false;
+  let record = value as Record<string, unknown>;
+  return (
+    typeof record.root === "string" &&
+    typeof record.outDir === "string" &&
+    typeof record.spriteFileName === "string" &&
+    Array.isArray(record.symbolIds) &&
+    record.symbolIds.every((symbolId) => typeof symbolId === "string")
+  );
+}
+
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -110,8 +122,12 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
 
   // every icon seen so far, used by the dev server
   let icons = new Map<string, string>();
-  // icons imported by each environment's build, keyed by environment name
-  let environmentIcons = new Map<string, Map<string, string>>();
+  // the icon each svg module turned into, keyed by module id. Each build's
+  // sprite is made from the modules in its bundle, so icons that are no
+  // longer imported drop out of `vite build --watch` rebuilds, while icons
+  // whose modules come from Rollup's cache (and aren't transformed again)
+  // are kept.
+  let moduleIcons = new Map<string, { symbolId: string; content: string }>();
   // state handed from generateBundle to writeBundle, keyed by outDir
   let builds = new Map<string, BuildState>();
 
@@ -121,7 +137,6 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
 
   function getBuildTarget(environment: EnvironmentLike) {
     return {
-      name: environment?.name ?? (config.build.ssr ? "ssr" : "client"),
       isServer: environment
         ? environment.config.consumer === "server"
         : Boolean(config.build.ssr),
@@ -132,29 +147,26 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     };
   }
 
-  function getEnvironmentIcons(name: string) {
-    let result = environmentIcons.get(name);
-    if (!result) {
-      result = new Map();
-      environmentIcons.set(name, result);
-    }
-    return result;
-  }
-
   function getClientBuildRecordPath() {
     return path.join(config.cacheDir, PLUGIN_NAME, "client-build.json");
   }
 
   async function readClientBuildRecord(): Promise<ClientBuildRecord | null> {
-    let record: ClientBuildRecord;
+    let recordPath = getClientBuildRecordPath();
+    let record: unknown;
     try {
-      record = await fse.readJson(getClientBuildRecordPath());
+      record = await fse.readJson(recordPath);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
         config.logger.warn(
-          `[${PLUGIN_NAME}] ignoring unreadable ${getClientBuildRecordPath()}: ${String(error)}`,
+          `[${PLUGIN_NAME}] ignoring unreadable ${recordPath}: ${String(error)}`,
         );
       }
+      return null;
+    }
+
+    if (!isClientBuildRecord(record)) {
+      config.logger.warn(`[${PLUGIN_NAME}] ignoring invalid ${recordPath}`);
       return null;
     }
 
@@ -264,8 +276,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
         if (svgRegex.test(id)) {
           let spriteUrl = getSpriteUrlPlaceholder();
           let { symbolId, content } = await addIconToSprite(id);
-          let { name } = getBuildTarget(this.environment);
-          getEnvironmentIcons(name).set(symbolId, content);
+          moduleIcons.set(id, { symbolId, content });
 
           return {
             code: js`export default "${spriteUrl}#${symbolId}";`,
@@ -275,8 +286,16 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
       },
 
       async generateBundle(_, bundle) {
-        let { name, isServer, outDir } = getBuildTarget(this.environment);
-        let buildIcons = getEnvironmentIcons(name);
+        let { isServer, outDir } = getBuildTarget(this.environment);
+
+        let buildIcons = new Map<string, string>();
+        for (let chunk of Object.values(bundle)) {
+          if (chunk.type !== "chunk") continue;
+          for (let moduleId of chunk.moduleIds) {
+            let icon = moduleIcons.get(moduleId);
+            if (icon) buildIcons.set(icon.symbolId, icon.content);
+          }
+        }
 
         // The client is built before the server, so its sprite can't contain
         // icons that are only imported by server code (e.g. in a loader). A
