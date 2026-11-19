@@ -39,5 +39,9 @@
       "version": "^12.21.0",
       "onFail": "warn"
     }
+  },
+  "devDependencies": {
+    "oxfmt": "^0.79.0",
+    "oxlint": "^1.94.0"
   }
 }
