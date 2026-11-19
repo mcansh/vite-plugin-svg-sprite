@@ -52,15 +52,13 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "chokidar": "^4.0.3",
-    "fs-extra": "^11.3.0",
-    "hasha": "^6.0.0",
+    "fs-extra": "^11.4.1",
     "svgo": "^4.1.0",
     "svgstore": "^3.0.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
-    "vite": "^7.3.8"
+    "vite": "^8.3.8"
   },
   "peerDependencies": {
     "vite": "^5.0.0-0 || ^6.0.0-0 || ^7.0.0-0 || ^8.0.0-0"
