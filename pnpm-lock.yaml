@@ -173,7 +173,6 @@ settings:
 
 overrides:
   '@mcansh/vite-plugin-svg-sprite': 'workspace:'
-  '@mcansh/vite-svg-sprite-plugin': 'workspace:'
   '@remix-run/dev>@npmcli/package-json': ^8.0.1
   '@remix-run/dev>@vanilla-extract/integration': ^8.0.11
   '@remix-run/dev>cacache': ^21.0.2
@@ -455,15 +454,6 @@ importers:
         version: 11.0.4
       vite:
         specifier: ^7.3.8
-        version: 7.3.8(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.30.1)(yaml@2.9.1)
-
-  packages/vite-svg-sprite-plugin:
-    dependencies:
-      '@mcansh/vite-plugin-svg-sprite':
-        specifier: 'workspace:'
-        version: link:../vite-plugin-svg-sprite
-      vite:
-        specifier: ^5.0.0-0 || ^6.0.0-0 || ^7.0.0-0 || ^8.0.0-0
         version: 7.3.8(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.30.1)(yaml@2.9.1)
 
 packages:

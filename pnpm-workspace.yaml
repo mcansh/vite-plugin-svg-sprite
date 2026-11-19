@@ -10,7 +10,6 @@ allowBuilds:
 
 overrides:
   "@mcansh/vite-plugin-svg-sprite": "workspace:"
-  "@mcansh/vite-svg-sprite-plugin": "workspace:"
 
   # Remix v2 still declares these vulnerable build-tool ranges.
   "@remix-run/dev>@npmcli/package-json": "^8.0.1"
