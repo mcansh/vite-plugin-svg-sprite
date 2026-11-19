@@ -1,27 +1,60 @@
 # @mcansh/vite-plugin-svg-sprite
 
-this vite plugin will transform any imported svg files and combine them into an svg sprite sheet
+Vite plugin that combines imported SVGs into a single optimized sprite sheet, with each import resolving to a `<use href>`-ready symbol URL.
 
-## installation and set up
+## Why use a sprite
+
+The browser downloads one sprite file and can cache it. Each icon in the page is a symbol URL. The page does not repeat the SVG markup inline.
+
+## Install
 
 ```sh
 npm i -D @mcansh/vite-plugin-svg-sprite
 ```
 
-this is an example using Remix, but this plugin works with any vite configuration
+## Set up Vite
+
+Add `svgSprite` to the Vite `plugins` array.
 
 ```ts
 import { svgSprite } from "@mcansh/vite-plugin-svg-sprite"
-import { vitePlugin as remix } from "@remix-run/dev"
 import { defineConfig } from "vite"
-import tsconfigPaths from "vite-tsconfig-paths"
 
 export default defineConfig({
-  plugins: [remix(), tsconfigPaths(), svgSprite()],
+  plugins: [svgSprite()],
 })
 ```
 
-you can configure the generated sprite file name as well as the generated symbol id pattern
+## Set up React Router
+
+Use `reactRouter` from `@react-router/dev/vite`.
+
+```ts
+import { svgSprite } from "@mcansh/vite-plugin-svg-sprite"
+import { reactRouter } from "@react-router/dev/vite"
+import { defineConfig } from "vite"
+
+export default defineConfig({
+  plugins: [reactRouter(), svgSprite()],
+})
+```
+
+## Set the options
+
+`svgSprite` accepts these options.
+
+| Option             | Default                | Effect                                                              |
+| ------------------ | ---------------------- | ------------------------------------------------------------------- |
+| `spriteOutputName` | `"sprite.svg"`         | Asset name of the sprite file.                                      |
+| `symbolId`         | `"icon-[name]-[hash]"` | Id pattern for each symbol.                                         |
+| `svgstoreOptions`  | `{}`                   | Options passed to svgstore. Your keys override the plugin defaults. |
+| `logging`          | `false`                | Deprecated. Use Vite's `logLevel` instead.                          |
+
+`spriteOutputName` is the file name Vite gives the sprite asset. During `vite dev`, the plugin serves the sprite at `/${assetsDir}/${spriteOutputName}`. The default `assetsDir` is `assets`. A production build can add Vite's asset hash to that file name.
+
+`symbolId` accepts `[name]` and `[hash]`. `[name]` is the SVG file name without `.svg`. `[hash]` is the SHA-512 hex digest of the module id. The plugin replaces the first `[name]` and the first `[hash]`.
+
+`svgstoreOptions` is applied on top of `{ renameDefs: true, copyAttrs: DEFAULT_COPY_ATTRS }`. `DEFAULT_COPY_ATTRS` lists `fill`, `stroke`, `stroke-width`, `stroke-linecap`, `stroke-linejoin`, `stroke-dasharray`, and `stroke-dashoffset`. If you set `copyAttrs`, your array replaces that list. Spread `DEFAULT_COPY_ATTRS` when you still want those attributes. svgstore always copies `viewBox`, `aria-labelledby`, and `role`.
 
 ```ts
 import { DEFAULT_COPY_ATTRS, svgSprite } from "@mcansh/vite-plugin-svg-sprite"
@@ -30,41 +63,67 @@ svgSprite({
   spriteOutputName: "sprite.svg",
   symbolId: "icon-[name]-[hash]",
   svgstoreOptions: {
-    copyAttrs: [
-      ...DEFAULT_COPY_ATTRS,
-      // any additional attributes you want to copy from the svg to the symbol
-    ],
+    copyAttrs: [...DEFAULT_COPY_ATTRS, "class"],
   },
 })
 ```
 
-## usage
+When `logging` is `true`, the plugin warns that the option is deprecated.
+
+## Use an icon
+
+Import an SVG. The default export is the sprite URL plus the symbol id. Pass that string to `<use href>`.
 
 ```tsx
-import linkIconHref from "@primer/octicons/build/svg/link-16.svg"
-import type { LinksFunction } from "@remix-run/node"
-import spriteUrl from "virtual:@mcansh/vite-plugin-svg-sprite"
+import iconHref from "./icon.svg"
 
-export const links: LinksFunction = () => {
-  return [{ rel: "preload", as: "image", href: spriteUrl, type: "image/svg+xml" }]
-}
-
-export default function Component() {
+export function Icon() {
   return (
     <svg className="size-4" aria-hidden>
-      <use href={linkIconHref} />
+      <use href={iconHref} />
     </svg>
   )
 }
 ```
 
-## server rendering (react router, remix, ssr builds)
+## Preload the sprite
 
-when the client is built before the server (as react router and remix do), the client build writes a small record of its sprite to `<cacheDir>/@mcansh/vite-plugin-svg-sprite/client-build.json` (`node_modules/.vite` by default).
+`virtual:@mcansh/vite-plugin-svg-sprite` exports the sprite URL with no symbol id.
 
-the server build reads that record and:
+```tsx
+import spriteUrl from "virtual:@mcansh/vite-plugin-svg-sprite"
 
-- points icons that are already in the client sprite at the client sprite, so server rendered html and the client bundle reference the same file
-- puts icons that are only imported by server code (e.g. returned from a `loader`) into a separate sprite and copies it into the client `outDir` so the browser can load it
+import type { Route } from "./+types/root"
 
-the server build never changes client files or the client sprite. the record is only used when it comes from a client build of the same project root whose sprite still exists, and a new client build replaces it.
+export const links: Route.LinksFunction = () => [
+  { rel: "preload", as: "image", href: spriteUrl, type: "image/svg+xml" },
+]
+```
+
+## Add the client types
+
+`client.d.ts` declares that virtual module. The package exports it from `@mcansh/vite-plugin-svg-sprite/client`. Add that name to `compilerOptions.types`.
+
+```json
+{
+  "compilerOptions": {
+    "types": ["vite/client", "@mcansh/vite-plugin-svg-sprite/client"]
+  }
+}
+```
+
+## Supported Vite versions
+
+The peer dependency accepts Vite 5, Vite 6, Vite 7, or Vite 8, including prereleases of those majors. The declared range is `^5.0.0-0 || ^6.0.0-0 || ^7.0.0-0 || ^8.0.0-0`.
+
+## Server rendering
+
+React Router and Remix build the client before the server. The client build writes `<cacheDir>/@mcansh/vite-plugin-svg-sprite/client-build.json`. The default `cacheDir` is `node_modules/.vite`.
+
+The record stores the project root, the client output directory, the emitted sprite file name, and the symbol ids. The server build reads that record.
+
+- An icon that is already in the client sprite keeps the client sprite URL. Server HTML and the client bundle then point at the same file.
+- An icon imported only by server code goes into a second sprite. The server build copies that sprite into the client output directory.
+- The server build does not change client files or the client sprite.
+
+The plugin uses the record only when the JSON has the expected fields, the root matches this project, and the recorded sprite is still a file. A new client build deletes the previous record at the start of the build, then writes a new record. The plugin ignores an unreadable or invalid record and logs a warning.

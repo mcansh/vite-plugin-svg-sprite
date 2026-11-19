@@ -1,6 +1,15 @@
 {
   "name": "@mcansh/vite-plugin-svg-sprite",
   "version": "0.7.1",
+  "description": "Vite plugin that combines imported SVGs into a single optimized sprite sheet, with each import resolving to a <use href>-ready symbol URL.",
+  "keywords": [
+    "icons",
+    "sprite",
+    "svg",
+    "svg-sprite",
+    "vite",
+    "vite-plugin"
+  ],
   "license": "MIT",
   "author": "Logan McAnsh <logan@mcan.sh> (https://mcan.sh)",
   "repository": {
