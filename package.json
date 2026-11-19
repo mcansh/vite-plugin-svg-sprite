@@ -1,8 +1,5 @@
 {
   "type": "module",
-  "engines": {
-    "node": "24"
-  },
   "scripts": {
     "dev": "pnpm run --filter vite-plugin-svg-sprite --filter vite-remix --recursive --parallel dev",
     "build": "pnpm run --recursive build",
@@ -10,7 +7,8 @@
     "changeset:version": "changeset version && node ./scripts/remove-prerelease-changelogs.js && pnpm install --lockfile-only && node ./scripts/post-changeset.js",
     "changeset:release": "pnpm run build && changeset publish",
     "publish": "./scripts/publish.js",
-    "format": "prettier --ignore-path .gitignore --ignore-path .prettierignore --cache --ignore-unknown --write .",
+    "format": "oxfmt",
+    "lint": "oxlint --fix",
     "test": "pnpm --recursive --filter \"./packages/**\" run test"
   },
   "dependencies": {
@@ -25,14 +23,16 @@
     "glob": "^14.0.2",
     "jsonfile": "^6.1.0",
     "pkg-pr-new": "^0.0.94",
-    "prettier": "^3.6.2",
-    "prettier-plugin-organize-imports": "^4.1.0",
-    "prettier-plugin-tailwindcss": "^0.6.13",
     "semver": "^7.7.2",
     "tsdown": "^0.12.9",
     "typescript": "^5.8.3"
   },
-  "packageManager": "pnpm@12.21.0+sha512.66fd8278ee28935ce951792d34367ff3af5c432a2756445823029533835b8da529bbe0be5130afd56ed0713fb8789e47bad82d93bd5ae2fe54b15562d6276ef0",
+  "devDependencies": {
+    "@oxlint/plugins": "^1.94.0",
+    "oxfmt": "^0.79.0",
+    "oxlint": "^1.94.0",
+    "oxlint-tsgolint": "^7.0.2007"
+  },
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
@@ -40,8 +40,8 @@
       "onFail": "warn"
     }
   },
-  "devDependencies": {
-    "oxfmt": "^0.79.0",
-    "oxlint": "^1.94.0"
-  }
+  "engines": {
+    "node": "24"
+  },
+  "packageManager": "pnpm@12.21.0+sha512.66fd8278ee28935ce951792d34367ff3af5c432a2756445823029533835b8da529bbe0be5130afd56ed0713fb8789e47bad82d93bd5ae2fe54b15562d6276ef0"
 }

@@ -1,6 +1,5 @@
 {
   "js/ts.experimental.useTsgo": true,
-  "oxc.requireConfig": false,
   "[javascript][javascriptreact][typescript][typescriptreact]": {
     "editor.defaultFormatter": "oxc.oxc-vscode",
     "editor.formatOnSave": true
