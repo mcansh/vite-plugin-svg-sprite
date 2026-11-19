@@ -19,7 +19,7 @@
     "@oxlint/plugins": "^1.94.0",
     "@total-typescript/tsconfig": "^1.0.4",
     "@types/jsonfile": "^6.1.4",
-    "@types/node": "^26.6.6",
+    "@types/node": "^24.19.2",
     "@types/npmcli__package-json": "^4.0.4",
     "chalk": "^6.0.1",
     "glob": "^14.0.2",

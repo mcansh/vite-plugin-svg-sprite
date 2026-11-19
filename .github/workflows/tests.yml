@@ -1,0 +1,63 @@
+name: Tests
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [dev, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compatibility:
+    name: Node ${{ matrix.node }} and Vite ${{ matrix.vite }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Vite 6 uses fs/promises.constants, which Node added in 18.4.
+          - node: "18.0.0"
+            vite: "5"
+          - node: "18.20.8"
+            vite: "6"
+          - node: "20"
+            vite: "8"
+          - node: "22"
+            vite: "8"
+          - node: "24"
+            vite: "8"
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js and pnpm
+        uses: ./.github/actions/setup-toolchain
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --strict-peer-dependencies
+
+      - name: Type-check against Node 18
+        if: matrix.node == '18.0.0'
+        run: pnpm exec tsc --project tests/compat/tsconfig.json
+
+      - name: Run unit tests
+        if: matrix.node == '24'
+        run: pnpm test
+
+      - name: Build the plugin
+        run: pnpm --filter @mcansh/vite-plugin-svg-sprite build
+
+      - name: Test the packed plugin
+        env:
+          TEST_NODE: ${{ matrix.node }}
+          TEST_VITE: ${{ matrix.vite }}
+        run: bash tests/compat/check.sh "$TEST_NODE" "$TEST_VITE"
