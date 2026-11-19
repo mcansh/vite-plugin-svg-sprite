@@ -2,6 +2,7 @@
   "extends": "@total-typescript/tsconfig/bundler/no-dom",
   "include": ["src"],
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist",
     "composite": true,

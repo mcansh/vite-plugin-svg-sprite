@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import fsp from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
-import { test, type TestContext } from "node:test";
-import { build, type InlineConfig } from "vite";
-import { svgSprite } from "../dist/index.js";
+import type { TestContext } from "node:test";
+import { test } from "node:test";
+import type { InlineConfig } from "vite";
+import { build, createBuilder, createLogger } from "vite";
+import { svgSprite } from "./index.ts";
 
 type BuildWatcher = Extract<Awaited<ReturnType<typeof build>>, { on: unknown }>;
 
@@ -16,13 +18,15 @@ let entry = `
 `;
 
 async function createFixture(t: TestContext, files: Record<string, string>) {
-  let root = await mkdtemp(path.join(tmpdir(), "vite-svg-sprite-"));
-  t.after(() => rm(root, { recursive: true, force: true }));
+  let root = await fsp.realpath(
+    await fsp.mkdtemp(path.join(os.tmpdir(), "vite-svg-sprite-")),
+  );
+  t.after(() => fsp.rm(root, { recursive: true, force: true }));
 
   for (let [name, content] of Object.entries(files)) {
     let file = path.join(root, name);
-    await mkdir(path.dirname(file), { recursive: true });
-    await writeFile(file, content);
+    await fsp.mkdir(path.dirname(file), { recursive: true });
+    await fsp.writeFile(file, content);
   }
 
   return {
@@ -38,8 +42,9 @@ async function createFixture(t: TestContext, files: Record<string, string>) {
         },
       },
     } satisfies InlineConfig,
-    readSprite: () => readFile(path.join(root, "dist/sprite.svg"), "utf8"),
-    writeEntry: (code: string) => writeFile(path.join(root, "entry.js"), code),
+    readSprite: () => fsp.readFile(path.join(root, "dist/sprite.svg"), "utf8"),
+    writeEntry: (code: string) =>
+      fsp.writeFile(path.join(root, "entry.js"), code),
   };
 }
 
@@ -75,6 +80,82 @@ test("build includes icons from side-effect imports and unused eager SVG globs",
   let sprite = await readSprite();
   assert.match(sprite, /id="icon-kept"/);
   assert.match(sprite, /id="icon-eager"/);
+});
+
+test("an external SVG stays out of its environment's sprite", async (t) => {
+  let { config, readSprite, writeEntry } = await createFixture(t, {
+    "kept.svg": svg,
+  });
+  let svgPath = path.join(config.root, "kept.svg");
+  await writeEntry(
+    `import icon from ${JSON.stringify(svgPath)}; console.log(icon);`,
+  );
+  let builder = await createBuilder({
+    ...config,
+    environments: {
+      client: { consumer: "client" },
+      external: {
+        consumer: "client",
+        build: {
+          outDir: "dist-external",
+          rollupOptions: { external: [svgPath] },
+        },
+      },
+    },
+  });
+  let { client, external } = builder.environments;
+  assert.ok(client && external);
+
+  await builder.build(client);
+  assert.match(await readSprite(), /id="icon-kept"/);
+
+  await builder.build(external);
+  let sprite = await fsp.readFile(
+    path.join(config.root, "dist-external/sprite.svg"),
+    "utf8",
+  );
+  assert.doesNotMatch(sprite, /id="icon-kept"/);
+});
+
+test("SSR warns and emits a standalone sprite for invalid client build records", async (t) => {
+  let { config, readSprite } = await createFixture(t, {
+    "entry.js": 'import icon from "./kept.svg"; console.log(icon);',
+    "kept.svg": svg,
+  });
+  let cacheDir = path.join(config.root, "cache");
+  let recordDir = path.join(cacheDir, "@mcansh/vite-plugin-svg-sprite");
+  let recordPath = path.join(recordDir, "client-build.json");
+  let warnings: string[] = [];
+  let customLogger = createLogger("silent");
+  customLogger.warn = (message) => {
+    warnings.push(message);
+  };
+  let ssrConfig = {
+    ...config,
+    cacheDir,
+    customLogger,
+    build: { ...config.build, ssr: true, ssrEmitAssets: true },
+  } satisfies InlineConfig;
+
+  await fsp.mkdir(recordDir, { recursive: true });
+  await fsp.writeFile(path.join(recordDir, "existing.svg"), svg);
+  for (let record of [
+    null,
+    {
+      root: config.root,
+      outDir: recordDir,
+      spriteFileName: "existing.svg",
+      symbolIds: [123, "icon-kept"],
+    },
+  ]) {
+    await fsp.writeFile(recordPath, JSON.stringify(record));
+    warnings.length = 0;
+
+    await build(ssrConfig);
+
+    assert.ok(warnings.some((warning) => warning.includes("ignoring invalid")));
+    assert.match(await readSprite(), /id="icon-kept"/);
+  }
 });
 
 test(

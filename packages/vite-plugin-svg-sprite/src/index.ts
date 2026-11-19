@@ -37,6 +37,11 @@ type ClientBuildRecord = {
   symbolIds: Array<string>;
 };
 
+type SpriteIcon = {
+  symbolId: string;
+  content: string;
+};
+
 type BuildState = {
   isServer: boolean;
   /** the sprite this build emitted, if any */
@@ -122,8 +127,6 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
 
   // every icon seen so far, used by the dev server
   let icons = new Map<string, string>();
-  // Keep transformed icons by module ID so cached modules can reuse them.
-  let moduleIcons = new Map<string, { symbolId: string; content: string }>();
   // state handed from generateBundle to writeBundle, keyed by outDir
   let builds = new Map<string, BuildState>();
 
@@ -174,7 +177,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     return record;
   }
 
-  async function addIconToSprite(id: string) {
+  async function addIconToSprite(id: string): Promise<SpriteIcon> {
     let content = await fse.readFile(id, "utf-8");
 
     let basename = path.basename(id, ".svg");
@@ -271,12 +274,12 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
       async transform(_code, id) {
         if (svgRegex.test(id)) {
           let spriteUrl = getSpriteUrlPlaceholder();
-          let { symbolId, content } = await addIconToSprite(id);
-          moduleIcons.set(id, { symbolId, content });
+          let icon = await addIconToSprite(id);
 
           return {
-            code: js`export default "${spriteUrl}#${symbolId}";`,
+            code: js`export default "${spriteUrl}#${icon.symbolId}";`,
             map: { mappings: "" },
+            meta: { [PLUGIN_NAME]: icon },
           };
         }
       },
@@ -288,7 +291,9 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
         // The current module graph includes imports used only to register
         // icons, even when tree shaking removes them from the output chunks.
         for (let moduleId of this.getModuleIds()) {
-          let icon = moduleIcons.get(moduleId);
+          if (!svgRegex.test(moduleId)) continue;
+          let icon: SpriteIcon | undefined =
+            this.getModuleInfo(moduleId)?.meta[PLUGIN_NAME];
           if (icon) buildIcons.set(icon.symbolId, icon.content);
         }
 
