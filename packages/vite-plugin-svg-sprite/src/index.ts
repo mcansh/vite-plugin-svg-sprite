@@ -1,7 +1,7 @@
+import { createHash } from "node:crypto"
 import path from "node:path"
 
 import fse from "fs-extra"
-import { hash } from "hasha"
 import * as svgo from "svgo"
 import type { Options as SVGStoreOptions } from "svgstore"
 import svgstore from "svgstore"
@@ -192,8 +192,8 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
       symbolId = symbolId.replace("[name]", basename)
     }
     if (options.symbolId.includes("[hash]")) {
-      let contentHash = await hash(id)
-      symbolId = symbolId.replace("[hash]", contentHash)
+      let pathHash = createHash("sha512").update(id).digest("hex")
+      symbolId = symbolId.replace("[hash]", pathHash)
     }
 
     icons.set(symbolId, content)

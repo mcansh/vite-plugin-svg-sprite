@@ -20,10 +20,13 @@
     "target": "ES2022",
     "strict": true,
     "allowJs": true,
+    "preserveSymlinks": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "~/*": ["./app/*"]
+      "~/*": ["./app/*"],
+      // Use the example's Vite peer when checking the linked workspace plugin.
+      "vite": ["./node_modules/vite"]
     },
 
     // Vite takes care of building everything, not tsc.
