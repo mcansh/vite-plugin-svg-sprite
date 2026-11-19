@@ -1,5 +1,24 @@
 # @mcansh/vite-plugin-svg-sprite
 
+## 0.7.2
+
+### Patch Changes
+
+- be70f4a: docs: add package description, keywords, and refresh README
+
+  Ship the local svgstore types in the published declarations so `svgstoreOptions` is typed.
+
+- 60f98b3: fix: serve icons that are only imported on the server
+
+  Previously the client and server builds each emitted their own sprite. Icons only imported by server code (e.g. returned from a `loader`) were missing from the client sprite, and server rendered HTML referenced the server build's sprite, which isn't served to the browser. Server builds now point at the client sprite for the icons it has and copy a sprite with the remaining icons into the client build. Server bundles built in parallel no longer leave the sprite url placeholder in their output.
+
+- ba8fc8b: Remove icons from the sprite in `vite build --watch` when their imports are removed.
+
+  SSR builds now warn and emit a standalone sprite when the cached client build record contains invalid JSON or fields, or when the cached sprite path points to a directory.
+
+- 7c712fe: feat: support vite 8
+- 0740dc9: Update SVGO to 4.1.0 or later to pick up its security fixes.
+
 ## 0.7.1
 
 ### Patch Changes

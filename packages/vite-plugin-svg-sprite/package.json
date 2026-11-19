@@ -1,6 +1,6 @@
 {
   "name": "@mcansh/vite-plugin-svg-sprite",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Vite plugin that combines imported SVGs into a single optimized sprite sheet, with each import resolving to a <use href>-ready symbol URL.",
   "keywords": [
     "icons",
