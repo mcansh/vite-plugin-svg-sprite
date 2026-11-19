@@ -1,0 +1,11 @@
+#!/bin/sh
+# lane: capture Why trailers
+if [ -d "$(git rev-parse --git-path rebase-merge 2>/dev/null)" ] || [ -d "$(git rev-parse --git-path rebase-apply 2>/dev/null)" ]; then
+:
+elif command -v lane >/dev/null 2>&1; then
+lane capture HEAD || true
+elif git log -1 --format=%B | grep -qi '^Why:'; then
+echo "lane: not on PATH, so the Why trailer in this commit was not captured" >&2
+echo "lane: run 'lane capture HEAD' once lane is installed to record it" >&2
+fi
+# lane: end

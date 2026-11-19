@@ -1,0 +1,6 @@
+#!/bin/sh
+# lane: offer the Why form when an editor will open
+case "$2" in
+""|template) printf '\n# Why: <path>#<anchor> | what must stay true (optional, lane note)\n' >> "$1" ;;
+esac
+# lane: end
