@@ -185,9 +185,7 @@ overrides:
   react-router@6.30.4: 6.30.6
 
 patchedDependencies:
-  '@remix-run/dev@2.17.5':
-    hash: 38dde4d84d6d5dca058ca23e0afa7132db2a7af35a1f894b1946fd50a69fc9f5
-    path: patches/@remix-run__dev@2.17.5.patch
+  '@remix-run/dev@2.17.5': 38dde4d84d6d5dca058ca23e0afa7132db2a7af35a1f894b1946fd50a69fc9f5
 
 importers:
 
