@@ -171,7 +171,7 @@ test(
     })
     let watcher = await build({
       ...config,
-      build: { ...config.build, watch: { chokidar: { usePolling: true } } },
+      build: { ...config.build, watch: { watcher: { usePolling: true } } },
     })
     assert.ok("on" in watcher, "Expected a Vite build watcher")
     t.after(() => watcher.close())
