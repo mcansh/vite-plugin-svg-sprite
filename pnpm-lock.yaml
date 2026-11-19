@@ -204,6 +204,9 @@ importers:
       '@npmcli/package-json':
         specifier: ^8.0.1
         version: 8.0.1
+      '@oxlint/plugins':
+        specifier: ^1.94.0
+        version: 1.94.0
       '@total-typescript/tsconfig':
         specifier: ^1.0.4
         version: 1.0.4
@@ -222,6 +225,15 @@ importers:
       jsonfile:
         specifier: ^6.1.0
         version: 6.1.0
+      oxfmt:
+        specifier: ^0.79.0
+        version: 0.79.0
+      oxlint:
+        specifier: ^1.94.0
+        version: 1.94.0(oxlint-tsgolint@7.0.2007)
+      oxlint-tsgolint:
+        specifier: ^7.0.2007
+        version: 7.0.2007
       pkg-pr-new:
         specifier: ^0.0.94
         version: 0.0.94
@@ -234,19 +246,6 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
-    devDependencies:
-      '@oxlint/plugins':
-        specifier: ^1.94.0
-        version: 1.94.0
-      oxfmt:
-        specifier: ^0.79.0
-        version: 0.79.0
-      oxlint:
-        specifier: ^1.94.0
-        version: 1.94.0(oxlint-tsgolint@7.0.2007)
-      oxlint-tsgolint:
-        specifier: ^7.0.2007
-        version: 7.0.2007
 
   examples/basic-vite:
     dependencies:
