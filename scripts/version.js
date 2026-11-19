@@ -3,7 +3,7 @@ import { glob } from "glob";
 import jsonfile from "jsonfile";
 import { execSync } from "node:child_process";
 import path from "node:path";
-import Confirm from "prompt-confirm";
+import { createInterface } from "node:readline/promises";
 import semver from "semver";
 
 let rootDir = path.join(import.meta.dirname, "..");
@@ -168,10 +168,18 @@ async function getPackageVersion(packageName) {
 
 /**
  * @param {string} question
- * @returns {Promise<string | boolean>}
+ * @returns {Promise<boolean>}
  */
 async function prompt(question) {
-  let confirm = new Confirm(question);
-  let answer = await confirm.run();
-  return answer;
+  let readline = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  try {
+    let answer = (await readline.question(question)).trim().toLowerCase();
+    return answer === "" || answer === "y" || answer === "yes";
+  } finally {
+    readline.close();
+  }
 }
