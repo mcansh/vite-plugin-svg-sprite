@@ -122,11 +122,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
 
   // every icon seen so far, used by the dev server
   let icons = new Map<string, string>();
-  // the icon each svg module turned into, keyed by module id. Each build's
-  // sprite is made from the modules in its bundle, so icons that are no
-  // longer imported drop out of `vite build --watch` rebuilds, while icons
-  // whose modules come from Rollup's cache (and aren't transformed again)
-  // are kept.
+  // Keep transformed icons by module ID so cached modules can reuse them.
   let moduleIcons = new Map<string, { symbolId: string; content: string }>();
   // state handed from generateBundle to writeBundle, keyed by outDir
   let builds = new Map<string, BuildState>();
@@ -289,12 +285,11 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
         let { isServer, outDir } = getBuildTarget(this.environment);
 
         let buildIcons = new Map<string, string>();
-        for (let chunk of Object.values(bundle)) {
-          if (chunk.type !== "chunk") continue;
-          for (let moduleId of chunk.moduleIds) {
-            let icon = moduleIcons.get(moduleId);
-            if (icon) buildIcons.set(icon.symbolId, icon.content);
-          }
+        // The current module graph includes imports used only to register
+        // icons, even when tree shaking removes them from the output chunks.
+        for (let moduleId of this.getModuleIds()) {
+          let icon = moduleIcons.get(moduleId);
+          if (icon) buildIcons.set(icon.symbolId, icon.content);
         }
 
         // The client is built before the server, so its sprite can't contain

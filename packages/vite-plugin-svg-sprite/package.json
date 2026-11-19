@@ -35,6 +35,7 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsc --watch",
+    "test": "node --test",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
