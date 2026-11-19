@@ -9,28 +9,27 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
-    "@react-router/node": "^7.6.3",
-    "@react-router/serve": "^7.6.3",
+    "@react-router/node": "^7.18.5",
+    "@react-router/serve": "^7.18.5",
     "clsx": "^2.1.1",
     "isbot": "^5.1.28",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router": "^7.6.3",
+    "react-router": "^7.18.5",
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@mcansh/vite-plugin-svg-sprite": "workspace:*",
-    "@react-router/dev": "^7.6.3",
+    "@react-router/dev": "^7.18.5",
     "@tailwindcss/vite": "^4.1.11",
     "@types/node": "^24.0.8",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "heroicons": "^2.2.0",
     "lucide-static": "^0.525.0",
-    "react-router-devtools": "^5.0.6",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.3",
-    "vite": "^7.0.8",
+    "vite": "^7.3.8",
     "vite-plugin-inspect": "^11.3.0",
     "vite-tsconfig-paths": "^5.1.4"
   }

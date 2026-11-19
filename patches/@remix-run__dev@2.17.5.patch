@@ -1,0 +1,45 @@
+diff --git a/dist/config/flat-routes.js b/dist/config/flat-routes.js
+index b7a594d5207ffdce058e207997cd8ec7233e790c..abe7b923f0629df54142a1e932ffa623ef1e702b 100644
+--- a/dist/config/flat-routes.js
++++ b/dist/config/flat-routes.js
+@@ -67,7 +67,7 @@ class PrefixLookupTrie {
+   }
+ }
+ function flatRoutes(appDirectory, ignoredFilePatterns = [], prefix = "routes") {
+-  let ignoredFileRegex = Array.from(new Set(["**/.*", ...ignoredFilePatterns])).map(re => minimatch.makeRe(re)).filter(re => !!re);
++  let ignoredFileMatchers = Array.from(new Set(["**/.*", ...ignoredFilePatterns])).map(pattern => new minimatch.Minimatch(pattern));
+   let routesDir = path__default["default"].join(appDirectory, prefix);
+   let rootRoute = config.findConfig(appDirectory, "root", routeModuleExts);
+   if (!rootRoute) {
+@@ -88,9 +88,9 @@ function flatRoutes(appDirectory, ignoredFilePatterns = [], prefix = "routes") {
+     let route = null;
+     // If it's a directory, don't recurse into it, instead just look for a route module
+     if (entry.isDirectory()) {
+-      route = findRouteModuleForFolder(appDirectory, filepath, ignoredFileRegex);
++      route = findRouteModuleForFolder(appDirectory, filepath, ignoredFileMatchers);
+     } else if (entry.isFile()) {
+-      route = findRouteModuleForFile(appDirectory, filepath, ignoredFileRegex);
++      route = findRouteModuleForFile(appDirectory, filepath, ignoredFileMatchers);
+     }
+     if (route) routes$1.push(route);
+   }
+@@ -235,15 +235,15 @@ function flatRoutesUniversal(appDirectory, routes$1, prefix = "routes") {
+   }
+   return routeManifest;
+ }
+-function findRouteModuleForFile(appDirectory, filepath, ignoredFileRegex) {
++function findRouteModuleForFile(appDirectory, filepath, ignoredFileMatchers) {
+   let relativePath = routes.normalizeSlashes(path__default["default"].relative(appDirectory, filepath));
+-  let isIgnored = ignoredFileRegex.some(regex => regex.test(relativePath));
++  let isIgnored = ignoredFileMatchers.some(matcher => matcher.match(relativePath));
+   if (isIgnored) return null;
+   return filepath;
+ }
+-function findRouteModuleForFolder(appDirectory, filepath, ignoredFileRegex) {
++function findRouteModuleForFolder(appDirectory, filepath, ignoredFileMatchers) {
+   let relativePath = path__default["default"].relative(appDirectory, filepath);
+-  let isIgnored = ignoredFileRegex.some(regex => regex.test(relativePath));
++  let isIgnored = ignoredFileMatchers.some(matcher => matcher.match(relativePath));
+   if (isIgnored) return null;
+   let routeRouteModule = config.findConfig(filepath, "route", routeModuleExts);
+   let routeIndexModule = config.findConfig(filepath, "index", routeModuleExts);

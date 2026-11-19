@@ -12,6 +12,23 @@ overrides:
   "@mcansh/vite-plugin-svg-sprite": "workspace:"
   "@mcansh/vite-svg-sprite-plugin": "workspace:"
 
+  # Remix v2 still declares these vulnerable build-tool ranges.
+  "@remix-run/dev>@npmcli/package-json": "^8.0.1"
+  "@remix-run/dev>@vanilla-extract/integration": "^8.0.11"
+  "@remix-run/dev>cacache": "^21.0.2"
+  "@remix-run/dev>minimatch": "^11.0.9"
+  "@remix-run/dev>remark-mdx-frontmatter": "^6.0.0"
+  "@typescript-eslint/typescript-estree>minimatch": "^11.0.9"
+  "esbuild@<0.25.0": "^0.25.12"
+
+  # Keep the Remix v2 router packages aligned with the v6 security backport.
+  "@remix-run/router@1.23.3": "1.23.4"
+  "react-router@6.30.4": "6.30.6"
+  "react-router-dom@6.30.4": "6.30.6"
+
+patchedDependencies:
+  "@remix-run/dev@2.17.5": patches/@remix-run__dev@2.17.5.patch
+
 update:
   changeset: true
   githubActions: true
