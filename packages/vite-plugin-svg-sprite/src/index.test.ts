@@ -8,7 +8,8 @@ import { svgSprite } from "../dist/index.js";
 
 type BuildWatcher = Extract<Awaited<ReturnType<typeof build>>, { on: unknown }>;
 
-let svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M0 0h1v1z"/></svg>';
+let svg =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M0 0h1v1z"/></svg>';
 let entry = `
   import spriteUrl from "virtual:@mcansh/vite-plugin-svg-sprite";
   document.body.innerHTML = '<svg><use href="' + spriteUrl + '#icon-kept" /></svg>';
