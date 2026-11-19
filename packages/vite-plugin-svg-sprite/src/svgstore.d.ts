@@ -1,4 +1,6 @@
 declare module "svgstore" {
+  import type * as cheerio from "cheerio"
+
   export type Options = {
     /**
      * Remove style attributes from SVG definitions, or a list of attributes to remove.
@@ -45,7 +47,7 @@ declare module "svgstore" {
     /**
      * The current [cheerio](https://github.com/cheeriojs/cheerio) instance.
      */
-    element: typeof import("cheerio")
+    element: typeof cheerio
     /**
      * @param id Unique id for this SVG file.
      * @param svg Raw source of the SVG file.

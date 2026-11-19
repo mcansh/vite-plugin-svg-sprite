@@ -3,7 +3,7 @@ import { useState } from "react"
 import archiveBoxArrowDownIconHref from "./archive-box-arrow-down.svg"
 
 export const App = () => {
-  const [count, setCount] = useState(0)
+  let [count, setCount] = useState(0)
 
   return (
     <div>

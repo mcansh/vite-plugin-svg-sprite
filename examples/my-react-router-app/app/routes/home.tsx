@@ -3,7 +3,7 @@ import eyeIconHref from "lucide-static/icons/eye.svg"
 import houseIconHref from "lucide-static/icons/house.svg"
 
 import archiveBoxArrowDownIconHref from "~/assets/archive-box-arrow-down.svg"
-import { Icon } from "~/icon"
+import { Icon } from "~/icon.tsx"
 
 import type { Route } from "./+types/home"
 
@@ -17,7 +17,5 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  return icons.map((icon) => {
-    return <Icon key={icon} icon={icon} width={100} height={100} />
-  })
+  return icons.map((icon) => <Icon key={icon} icon={icon} width={100} height={100} />)
 }

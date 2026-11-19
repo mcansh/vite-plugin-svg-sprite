@@ -24,7 +24,7 @@ export default function handleRequest(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   loadContext: AppLoadContext,
 ) {
-  return isbot(request.headers.get("user-agent") || "")
+  return isbot(request.headers.get("User-Agent") || "")
     ? handleBotRequest(request, responseStatusCode, responseHeaders, remixContext)
     : handleBrowserRequest(request, responseStatusCode, responseHeaders, remixContext)
 }
@@ -37,13 +37,13 @@ function handleBotRequest(
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false
-    const { pipe, abort } = renderToPipeableStream(
+    let { pipe, abort } = renderToPipeableStream(
       <RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />,
       {
         onAllReady() {
           shellRendered = true
-          const body = new PassThrough()
-          const stream = createReadableStreamFromReadable(body)
+          let body = new PassThrough()
+          let stream = createReadableStreamFromReadable(body)
 
           responseHeaders.set("Content-Type", "text/html")
 
@@ -56,10 +56,8 @@ function handleBotRequest(
 
           pipe(body)
         },
-        onShellError(error: unknown) {
-          reject(error)
-        },
-        onError(error: unknown) {
+        onShellError: reject,
+        onError(error) {
           responseStatusCode = 500
           // Log streaming rendering errors from inside the shell.  Don't log
           // errors encountered during initial shell rendering since they'll
@@ -83,13 +81,13 @@ function handleBrowserRequest(
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false
-    const { pipe, abort } = renderToPipeableStream(
+    let { pipe, abort } = renderToPipeableStream(
       <RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />,
       {
         onShellReady() {
           shellRendered = true
-          const body = new PassThrough()
-          const stream = createReadableStreamFromReadable(body)
+          let body = new PassThrough()
+          let stream = createReadableStreamFromReadable(body)
 
           responseHeaders.set("Content-Type", "text/html")
 
@@ -102,10 +100,8 @@ function handleBrowserRequest(
 
           pipe(body)
         },
-        onShellError(error: unknown) {
-          reject(error)
-        },
-        onError(error: unknown) {
+        onShellError: reject,
+        onError(error) {
           responseStatusCode = 500
           // Log streaming rendering errors from inside the shell.  Don't log
           // errors encountered during initial shell rendering since they'll

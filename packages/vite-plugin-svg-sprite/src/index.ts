@@ -8,13 +8,13 @@ import svgstore from "svgstore"
 import type { Plugin, ResolvedConfig } from "vite"
 import { createLogger } from "vite"
 
-let svgRegex = /\.svg$/
-let PLUGIN_NAME = "@mcansh/vite-plugin-svg-sprite"
+const svgRegex = /\.svg$/
+const PLUGIN_NAME = "@mcansh/vite-plugin-svg-sprite"
 
-let virtualModuleId = `virtual:${PLUGIN_NAME}`
-let resolvedVirtualModuleId = "\0" + virtualModuleId
+const virtualModuleId = `virtual:${PLUGIN_NAME}`
+const resolvedVirtualModuleId = "\0" + virtualModuleId
 
-let js = String.raw
+const js = String.raw
 
 export type Config = Partial<{
   spriteOutputName: string
@@ -76,7 +76,7 @@ export function createSvgSpritePlugin(configOptions?: Config): Array<Plugin> {
   ]
 }
 
-export let DEFAULT_COPY_ATTRS = [
+export const DEFAULT_COPY_ATTRS = [
   "fill",
   "stroke",
   "stroke-width",
@@ -86,17 +86,22 @@ export let DEFAULT_COPY_ATTRS = [
   "stroke-dashoffset",
 ]
 
+/* oxlint-disable anti-slop/no-unknown-parameters, anti-slop/no-runtime-typeof -- Validate the JSON cache record before using it. */
 function isClientBuildRecord(value: unknown): value is ClientBuildRecord {
   if (typeof value !== "object" || value === null) return false
-  let record = value as Record<string, unknown>
   return (
-    typeof record.root === "string" &&
-    typeof record.outDir === "string" &&
-    typeof record.spriteFileName === "string" &&
-    Array.isArray(record.symbolIds) &&
-    record.symbolIds.every((symbolId) => typeof symbolId === "string")
+    "root" in value &&
+    typeof value.root === "string" &&
+    "outDir" in value &&
+    typeof value.outDir === "string" &&
+    "spriteFileName" in value &&
+    typeof value.spriteFileName === "string" &&
+    "symbolIds" in value &&
+    Array.isArray(value.symbolIds) &&
+    value.symbolIds.every((symbolId) => typeof symbolId === "string")
   )
 }
+/* oxlint-enable anti-slop/no-unknown-parameters, anti-slop/no-runtime-typeof */
 
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
@@ -112,7 +117,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     ...configOptions,
   }
 
-  const logger = createLogger(options.logging ? "info" : undefined)
+  let logger = createLogger(options.logging ? "info" : undefined)
 
   if (options.logging) {
     logger.warnOnce(
@@ -152,7 +157,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     try {
       record = await fse.readJson(recordPath)
     } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+      if (!(error instanceof Error && "code" in error && error.code === "ENOENT")) {
         config.logger.warn(`[${PLUGIN_NAME}] ignoring unreadable ${recordPath}: ${String(error)}`)
       }
       return null
@@ -232,12 +237,11 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
       "g",
     )
 
-    return (content: string) => {
-      return content.replace(regex, (_match, symbolId?: string) => {
+    return (content: string) =>
+      content.replace(regex, (_match, symbolId?: string) => {
         let url = `/${resolveFileName(symbolId)}`
         return symbolId ? `${url}#${symbolId}` : url
       })
-    }
   }
 
   return [
@@ -302,9 +306,9 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
         // client build in writeBundle.
         let clientBuild = isServer ? await readClientBuildRecord() : null
         let clientSymbolIds = new Set(clientBuild?.symbolIds)
-        let spriteIcons = Array.from(buildIcons).filter(([symbolId]) => {
-          return !clientSymbolIds.has(symbolId)
-        })
+        let spriteIcons = Array.from(buildIcons).filter(
+          ([symbolId]) => !clientSymbolIds.has(symbolId),
+        )
 
         let spriteFileName: string | undefined
         if (!clientBuild || spriteIcons.length > 0) {
@@ -323,6 +327,7 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           ) {
             return clientBuild.spriteFileName
           }
+          // SAFETY: A missing spriteFileName always uses the client sprite above.
           return spriteFileName as string
         })
 

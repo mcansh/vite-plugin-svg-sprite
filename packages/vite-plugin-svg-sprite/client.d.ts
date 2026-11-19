@@ -1,4 +1,4 @@
 declare module "virtual:@mcansh/vite-plugin-svg-sprite" {
-  const spriteUrl: string
+  let spriteUrl: string
   export default spriteUrl
 }
