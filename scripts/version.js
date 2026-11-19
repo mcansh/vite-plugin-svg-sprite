@@ -1,53 +1,59 @@
-import chalk from "chalk";
-import { glob } from "glob";
-import jsonfile from "jsonfile";
-import { execSync } from "node:child_process";
-import path from "node:path";
-import { createInterface } from "node:readline/promises";
-import semver from "semver";
+import { execSync } from "node:child_process"
+import path from "node:path"
+import { createInterface } from "node:readline/promises"
 
-let rootDir = path.join(import.meta.dirname, "..");
-let packageDir = path.join(rootDir, "packages");
+import chalk from "chalk"
+import { glob } from "glob"
+import jsonfile from "jsonfile"
+import { INCREMENT_TYPES, increment, normalize } from "verkit"
 
-let packages = glob
+const rootDir = path.join(import.meta.dirname, "..")
+const packageDir = path.join(rootDir, "packages")
+
+const packages = glob
   .sync("./*/package.json", { cwd: packageDir })
-  .map((file) => path.dirname(file));
+  .map((file) => path.dirname(file))
 
 run(process.argv.slice(2)).then(
   () => {
-    process.exit(0);
+    process.exit(0)
   },
   (error) => {
-    console.error(error);
-    process.exit(1);
+    console.error(error)
+    process.exit(1)
   },
-);
+)
 
 /**
  * @param {string[]} args
  */
 async function run(args) {
-  let givenVersion = args[0];
-  let prereleaseId = args[1];
+  let givenVersion = args[0]
+  let prereleaseId = args[1]
 
-  ensureCleanWorkingDirectory();
+  ensureCleanWorkingDirectory()
+
+  if (givenVersion == null) {
+    console.error("Missing next version. Usage: node version.js [nextVersion]")
+    process.exit(1)
+  }
 
   // Get the next version number
-  let currentVersion = await getPackageVersion("vite-plugin-svg-sprite");
-  let nextVersion = semver.valid(givenVersion);
+  let currentVersion = await getPackageVersion("vite-plugin-svg-sprite")
+  let nextVersion = normalize(givenVersion)
   if (nextVersion == null) {
-    nextVersion = getNextVersion(currentVersion, givenVersion, prereleaseId);
+    nextVersion = getNextVersion(currentVersion, givenVersion, prereleaseId)
   }
 
   // Confirm the next version number
   if (prereleaseId !== "--skip-prompt") {
     let answer = await prompt(
       `Are you sure you want to bump version ${currentVersion} to ${nextVersion}? [Yn] `,
-    );
-    if (answer === false) return 0;
+    )
+    if (answer === false) return 0
   }
 
-  await incrementVersion(nextVersion);
+  await incrementVersion(nextVersion)
 }
 
 /**
@@ -56,13 +62,13 @@ async function run(args) {
 async function incrementVersion(nextVersion) {
   // Update version numbers in package.json for all packages
   for (let name of packages) {
-    await updateVersion(`${name}`, nextVersion);
+    await updateVersion(`${name}`, nextVersion)
   }
 
   // Commit and tag
-  execSync(`git commit --all --message="Version ${nextVersion}"`);
-  execSync(`git tag -a -m "Version ${nextVersion}" v${nextVersion}`);
-  console.log(chalk.green(`  Committed and tagged version ${nextVersion}`));
+  execSync(`git commit --all --message="Version ${nextVersion}"`)
+  execSync(`git tag -a -m "Version ${nextVersion}" v${nextVersion}`)
+  console.log(chalk.green(`  Committed and tagged version ${nextVersion}`))
 }
 
 /**
@@ -70,17 +76,17 @@ async function incrementVersion(nextVersion) {
  * @param {(json: import('type-fest').PackageJson) => any} transform
  */
 async function updatePackageConfig(packageName, transform) {
-  let file = packageJson(packageName, "packages");
+  let file = packageJson(packageName, "packages")
   try {
-    let json = await jsonfile.readFile(file);
+    let json = await jsonfile.readFile(file)
     if (!json) {
-      console.log(`No package.json found for ${packageName}; skipping`);
-      return;
+      console.log(`No package.json found for ${packageName}; skipping`)
+      return
     }
-    transform(json);
-    await jsonfile.writeFile(file, json, { spaces: 2 });
+    transform(json)
+    await jsonfile.writeFile(file, json, { spaces: 2 })
   } catch {
-    return;
+    return
   }
 }
 
@@ -91,17 +97,16 @@ async function updatePackageConfig(packageName, transform) {
  */
 async function updateVersion(packageName, nextVersion, successMessage) {
   await updatePackageConfig(packageName, (config) => {
-    config.version = nextVersion;
-  });
-  let logName = `@mcansh/${packageName}`;
+    config.version = nextVersion
+  })
+  let logName = `@mcansh/${packageName}`
   console.log(
     chalk.green(
       `  ${
-        successMessage ||
-        `Updated ${chalk.bold(logName)} to version ${chalk.bold(nextVersion)}`
+        successMessage || `Updated ${chalk.bold(logName)} to version ${chalk.bold(nextVersion)}`
       }`,
     ),
-  );
+  )
 }
 
 /**
@@ -111,39 +116,34 @@ async function updateVersion(packageName, nextVersion, successMessage) {
  * @returns
  */
 function getNextVersion(currentVersion, givenVersion, prereleaseId = "pre") {
-  if (givenVersion == null) {
-    console.error("Missing next version. Usage: node version.js [nextVersion]");
-    process.exit(1);
+  if (givenVersion === "experimental") {
+    let hash = execSync(`git rev-parse --short HEAD`).toString().trim()
+    return `0.0.0-experimental-${hash}`
   }
 
-  let nextVersion;
-  if (givenVersion === "experimental") {
-    let hash = execSync(`git rev-parse --short HEAD`).toString().trim();
-    nextVersion = `0.0.0-experimental-${hash}`;
-  } else {
-    // @ts-ignore
-    nextVersion = semver.inc(currentVersion, givenVersion, prereleaseId);
-  }
+  let release = INCREMENT_TYPES.find((type) => type === givenVersion)
+  let nextVersion =
+    release && currentVersion
+      ? increment(currentVersion, release, { identifier: prereleaseId })
+      : null
 
   if (nextVersion == null) {
-    console.error(`Invalid version specifier: ${givenVersion}`);
-    process.exit(1);
+    console.error(`Invalid version specifier: ${givenVersion}`)
+    process.exit(1)
   }
 
-  return nextVersion;
+  return nextVersion
 }
 
 /**
  * @returns {void}
  */
 function ensureCleanWorkingDirectory() {
-  let status = execSync(`git status --porcelain`).toString().trim();
-  let lines = status.split("\n");
+  let status = execSync(`git status --porcelain`).toString().trim()
+  let lines = status.split("\n")
   if (!lines.every((line) => line === "" || line.startsWith("?"))) {
-    console.error(
-      "Working directory is not clean. Please commit or stash your changes.",
-    );
-    process.exit(1);
+    console.error("Working directory is not clean. Please commit or stash your changes.")
+    process.exit(1)
   }
 }
 
@@ -153,7 +153,7 @@ function ensureCleanWorkingDirectory() {
  * @returns {string}
  */
 function packageJson(packageName, directory = "") {
-  return path.join(rootDir, directory, packageName, "package.json");
+  return path.join(rootDir, directory, packageName, "package.json")
 }
 
 /**
@@ -161,9 +161,9 @@ function packageJson(packageName, directory = "") {
  * @returns {Promise<string | undefined>}
  */
 async function getPackageVersion(packageName) {
-  let file = packageJson(packageName, "packages");
-  let json = await jsonfile.readFile(file);
-  return json.version;
+  let file = packageJson(packageName, "packages")
+  let json = await jsonfile.readFile(file)
+  return json.version
 }
 
 /**
@@ -174,12 +174,12 @@ async function prompt(question) {
   let readline = createInterface({
     input: process.stdin,
     output: process.stdout,
-  });
+  })
 
   try {
-    let answer = (await readline.question(question)).trim().toLowerCase();
-    return answer === "" || answer === "y" || answer === "yes";
+    let answer = (await readline.question(question)).trim().toLowerCase()
+    return answer === "" || answer === "y" || answer === "yes"
   } finally {
-    readline.close();
+    readline.close()
   }
 }

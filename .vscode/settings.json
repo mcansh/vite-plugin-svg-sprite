@@ -1,0 +1,7 @@
+{
+  "js/ts.experimental.useTsgo": true,
+  "[javascript][javascriptreact][typescript][typescriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode",
+    "editor.formatOnSave": true
+  }
+}

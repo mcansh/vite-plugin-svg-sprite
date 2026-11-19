@@ -1,15 +1,15 @@
 {
   "name": "vite-no-remix",
   "private": true,
+  "keywords": [],
+  "license": "MIT",
+  "author": "Logan McAnsh <logan@mcan.sh> (https://mcan.sh)",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview"
   },
-  "keywords": [],
-  "author": "Logan McAnsh <logan@mcan.sh> (https://mcan.sh)",
-  "license": "MIT",
   "dependencies": {
     "react": "19.1.0",
     "react-dom": "19.1.0"

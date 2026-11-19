@@ -32,5 +32,8 @@ jobs:
       - name: Format code
         run: pnpm run format
 
+      - name: Lint code
+        run: pnpm run lint
+
       - name: Submit formatting fixes
         uses: autofix-ci/action@v1

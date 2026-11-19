@@ -1,6 +1,8 @@
 {
   "name": "@mcansh/vite-plugin-svg-sprite",
   "version": "0.7.1",
+  "license": "MIT",
+  "author": "Logan McAnsh <logan@mcan.sh> (https://mcan.sh)",
   "repository": {
     "url": "mcansh/vite-plugin-svg-sprite",
     "directory": "packages/vite-plugin-svg-sprite"
@@ -11,9 +13,15 @@
       "url": "https://github.com/sponsors/mcansh"
     }
   ],
-  "license": "MIT",
-  "author": "Logan McAnsh <logan@mcan.sh> (https://mcan.sh)",
+  "files": [
+    "client.d.ts",
+    "dist",
+    "package.json",
+    "README.md"
+  ],
   "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -24,14 +32,10 @@
       "types": "./client.d.ts"
     }
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "client.d.ts",
-    "dist",
-    "package.json",
-    "README.md"
-  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "tsdown",
     "dev": "tsc --watch",
@@ -54,9 +58,5 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

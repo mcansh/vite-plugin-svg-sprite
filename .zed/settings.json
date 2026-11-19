@@ -1,0 +1,52 @@
+{
+  "languages": {
+    "JavaScript": {
+      "language_servers": [
+        "typescript-ls",
+        "oxlint",
+        "oxfmt",
+        "!vtsls",
+        "!typescript-language-server",
+        "..."
+      ],
+      "formatter": { "language_server": { "name": "oxfmt" } },
+      "format_on_save": "on"
+    },
+    "JSX": {
+      "language_servers": [
+        "typescript-ls",
+        "oxlint",
+        "oxfmt",
+        "!vtsls",
+        "!typescript-language-server",
+        "..."
+      ],
+      "formatter": { "language_server": { "name": "oxfmt" } },
+      "format_on_save": "on"
+    },
+    "TypeScript": {
+      "language_servers": [
+        "typescript-ls",
+        "oxlint",
+        "oxfmt",
+        "!vtsls",
+        "!typescript-language-server",
+        "..."
+      ],
+      "formatter": { "language_server": { "name": "oxfmt" } },
+      "format_on_save": "on"
+    },
+    "TSX": {
+      "language_servers": [
+        "typescript-ls",
+        "oxlint",
+        "oxfmt",
+        "!vtsls",
+        "!typescript-language-server",
+        "..."
+      ],
+      "formatter": { "language_server": { "name": "oxfmt" } },
+      "format_on_save": "on"
+    }
+  }
+}
