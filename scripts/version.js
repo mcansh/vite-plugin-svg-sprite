@@ -5,12 +5,14 @@ import { createInterface } from "node:readline/promises"
 import chalk from "chalk"
 import { glob } from "glob"
 import jsonfile from "jsonfile"
-import semver from "semver"
+import { INCREMENT_TYPES, increment, normalize } from "verkit"
 
-let rootDir = path.join(import.meta.dirname, "..")
-let packageDir = path.join(rootDir, "packages")
+const rootDir = path.join(import.meta.dirname, "..")
+const packageDir = path.join(rootDir, "packages")
 
-let packages = glob.sync("./*/package.json", { cwd: packageDir }).map((file) => path.dirname(file))
+const packages = glob
+  .sync("./*/package.json", { cwd: packageDir })
+  .map((file) => path.dirname(file))
 
 run(process.argv.slice(2)).then(
   () => {
@@ -31,9 +33,14 @@ async function run(args) {
 
   ensureCleanWorkingDirectory()
 
+  if (givenVersion == null) {
+    console.error("Missing next version. Usage: node version.js [nextVersion]")
+    process.exit(1)
+  }
+
   // Get the next version number
   let currentVersion = await getPackageVersion("vite-plugin-svg-sprite")
-  let nextVersion = semver.valid(givenVersion)
+  let nextVersion = normalize(givenVersion)
   if (nextVersion == null) {
     nextVersion = getNextVersion(currentVersion, givenVersion, prereleaseId)
   }
@@ -109,19 +116,16 @@ async function updateVersion(packageName, nextVersion, successMessage) {
  * @returns
  */
 function getNextVersion(currentVersion, givenVersion, prereleaseId = "pre") {
-  if (givenVersion == null) {
-    console.error("Missing next version. Usage: node version.js [nextVersion]")
-    process.exit(1)
-  }
-
-  let nextVersion
   if (givenVersion === "experimental") {
     let hash = execSync(`git rev-parse --short HEAD`).toString().trim()
-    nextVersion = `0.0.0-experimental-${hash}`
-  } else {
-    // @ts-ignore
-    nextVersion = semver.inc(currentVersion, givenVersion, prereleaseId)
+    return `0.0.0-experimental-${hash}`
   }
+
+  let release = INCREMENT_TYPES.find((type) => type === givenVersion)
+  let nextVersion =
+    release && currentVersion
+      ? increment(currentVersion, release, { identifier: prereleaseId })
+      : null
 
   if (nextVersion == null) {
     console.error(`Invalid version specifier: ${givenVersion}`)

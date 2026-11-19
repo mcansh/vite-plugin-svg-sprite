@@ -3,9 +3,9 @@
 import { execSync } from "node:child_process"
 
 import { globSync } from "glob"
-import semver from "semver"
+import { getPrerelease } from "verkit"
 
-let packages = globSync("packages/*", { absolute: true })
+const packages = globSync("packages/*", { absolute: true })
 
 function getTaggedVersion() {
   let output = execSync("git tag --list --points-at HEAD").toString().trim()
@@ -30,8 +30,8 @@ async function run() {
     process.exit(1)
   }
 
-  let prerelease = semver.prerelease(taggedVersion)
-  let prereleaseTag = prerelease ? String(prerelease[0]) : undefined
+  let prerelease = getPrerelease(taggedVersion)?.[0]
+  let prereleaseTag = prerelease === undefined ? undefined : String(prerelease)
   let tag = prereleaseTag
     ? prereleaseTag.includes("nightly")
       ? "nightly"

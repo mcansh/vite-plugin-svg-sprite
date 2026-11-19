@@ -18,6 +18,7 @@
     "@npmcli/package-json": "^8.0.1",
     "@oxlint/plugins": "^1.94.0",
     "@total-typescript/tsconfig": "^1.0.4",
+    "@types/jsonfile": "^6.1.4",
     "@types/node": "^24.0.8",
     "@types/npmcli__package-json": "^4.0.4",
     "chalk": "^5.4.1",
@@ -27,9 +28,10 @@
     "oxlint": "^1.94.0",
     "oxlint-tsgolint": "^7.0.2007",
     "pkg-pr-new": "^0.0.94",
-    "semver": "^7.7.2",
     "tsdown": "^0.12.9",
-    "typescript": "^5.8.3"
+    "type-fest": "^6.0.2",
+    "typescript": "^5.8.3",
+    "verkit": "^0.5.0"
   },
   "devEngines": {
     "packageManager": {
