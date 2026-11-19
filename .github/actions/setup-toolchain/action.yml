@@ -1,0 +1,41 @@
+name: Set up Node.js and pnpm
+description: Provision the repository's Node.js and pnpm versions with Nub.
+
+inputs:
+  cache:
+    description: Cache Nub's toolchains and pnpm's dependency store.
+    default: "true"
+  registry-url:
+    description: npm registry URL for publishing.
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Install Nub and Node.js
+      uses: nubjs/setup-nub@c7b970ec04655a2f0a111cd436cc182a3b660e7a # v0
+      with:
+        nub-version: "0.11.0"
+        node-version-file: package.json
+        cache: ${{ inputs.cache }}
+        registry-url: ${{ inputs.registry-url }}
+
+    - name: Add pinned pnpm to PATH
+      id: pnpm
+      shell: bash
+      run: |
+        pnpm_bin="$(nub pm which)"
+        bin_dir="$RUNNER_TEMP/project-pnpm"
+        mkdir -p "$bin_dir"
+        printf '#!/usr/bin/env bash\nexec node %q "$@"\n' "$pnpm_bin" > "$bin_dir/pnpm"
+        chmod +x "$bin_dir/pnpm"
+        store_path="$("$bin_dir/pnpm" store path)"
+        echo "$bin_dir" >> "$GITHUB_PATH"
+        echo "store=$store_path" >> "$GITHUB_OUTPUT"
+
+    - name: Cache pnpm store
+      if: inputs.cache == 'true'
+      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      with:
+        path: ${{ steps.pnpm.outputs.store }}
+        key: pnpm-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml') }}

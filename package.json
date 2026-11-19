@@ -1,5 +1,8 @@
 {
   "type": "module",
+  "engines": {
+    "node": "24"
+  },
   "scripts": {
     "dev": "pnpm run --filter vite-plugin-svg-sprite --filter vite-remix --recursive --parallel dev",
     "build": "pnpm run --recursive build",
@@ -11,7 +14,7 @@
   },
   "dependencies": {
     "@arethetypeswrong/cli": "^0.18.2",
-    "@changesets/cli": "^2.29.5",
+    "@changesets/cli": "^3.0.3",
     "@manypkg/get-packages": "^3.0.0",
     "@npmcli/package-json": "^6.2.0",
     "@total-typescript/tsconfig": "^1.0.4",
@@ -29,5 +32,12 @@
     "tsdown": "^0.12.9",
     "typescript": "^5.8.3"
   },
-  "packageManager": "pnpm@10.12.4+sha512.5ea8b0deed94ed68691c9bad4c955492705c5eeb8a87ef86bc62c74a26b037b08ff9570f108b2e4dbd1dd1a9186fea925e527f141c648e85af45631074680184"
+  "packageManager": "pnpm@12.21.0+sha512.66fd8278ee28935ce951792d34367ff3af5c432a2756445823029533835b8da529bbe0be5130afd56ed0713fb8789e47bad82d93bd5ae2fe54b15562d6276ef0",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^12.21.0",
+      "onFail": "warn"
+    }
+  }
 }

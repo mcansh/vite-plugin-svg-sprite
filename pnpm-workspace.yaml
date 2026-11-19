@@ -2,12 +2,16 @@ packages:
   - packages/*
   - examples/*
 
-onlyBuiltDependencies:
-  - "@swc/core"
-  - "@tailwindcss/oxide"
-  - esbuild
-  - unrs-resolver
+allowBuilds:
+  "@swc/core": true
+  "@tailwindcss/oxide": true
+  esbuild: true
+  unrs-resolver: true
 
 overrides:
   "@mcansh/vite-plugin-svg-sprite": "workspace:"
   "@mcansh/vite-svg-sprite-plugin": "workspace:"
+
+update:
+  changeset: true
+  githubActions: true

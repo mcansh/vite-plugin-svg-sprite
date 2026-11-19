@@ -1,0 +1,36 @@
+name: autofix.ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - dev
+
+permissions:
+  contents: read
+
+jobs:
+  autofix:
+    runs-on: "ubuntu-latest"
+    timeout-minutes: 15
+    env:
+      CI: "true"
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Format the PR head so fixes apply cleanly when it is behind main.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Node.js and pnpm
+        uses: ./.github/actions/setup-toolchain
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --strict-peer-dependencies
+
+      - name: Format code
+        run: pnpm run format
+
+      - name: Submit formatting fixes
+        uses: autofix-ci/action@v1
