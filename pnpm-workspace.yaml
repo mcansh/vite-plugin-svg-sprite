@@ -11,3 +11,7 @@ onlyBuiltDependencies:
 overrides:
   "@mcansh/vite-plugin-svg-sprite": "workspace:"
   "@mcansh/vite-svg-sprite-plugin": "workspace:"
+
+update:
+  changeset: true
+  githubActions: true
