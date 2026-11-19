@@ -139,6 +139,7 @@ test("SSR warns and emits a standalone sprite for invalid client build records",
 
   await fsp.mkdir(recordDir, { recursive: true });
   await fsp.writeFile(path.join(recordDir, "existing.svg"), svg);
+  await fsp.mkdir(path.join(recordDir, "directory.svg"));
   for (let record of [
     null,
     {
@@ -146,6 +147,12 @@ test("SSR warns and emits a standalone sprite for invalid client build records",
       outDir: recordDir,
       spriteFileName: "existing.svg",
       symbolIds: [123, "icon-kept"],
+    },
+    {
+      root: config.root,
+      outDir: recordDir,
+      spriteFileName: "directory.svg",
+      symbolIds: ["icon-kept"],
     },
   ]) {
     await fsp.writeFile(recordPath, JSON.stringify(record));

@@ -173,7 +173,14 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     // still there
     if (record.root !== config.root) return null;
     let clientSprite = path.join(record.outDir, record.spriteFileName);
-    if (!(await fse.pathExists(clientSprite))) return null;
+    let spriteStat = await fse.stat(clientSprite).catch(() => null);
+    if (!spriteStat) return null;
+    if (!spriteStat.isFile()) {
+      config.logger.warn(
+        `[${PLUGIN_NAME}] ignoring invalid ${recordPath}: expected a regular file at ${clientSprite}`,
+      );
+      return null;
+    }
     return record;
   }
 
