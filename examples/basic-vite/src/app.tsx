@@ -1,8 +1,9 @@
-import { useState } from "react";
-import archiveBoxArrowDownIconHref from "./archive-box-arrow-down.svg";
+import { useState } from "react"
+
+import archiveBoxArrowDownIconHref from "./archive-box-arrow-down.svg"
 
 export const App = () => {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   return (
     <div>
@@ -11,9 +12,7 @@ export const App = () => {
           <use href={archiveBoxArrowDownIconHref} />
         </svg>
       </div>
-      <button onClick={() => setCount((old) => old + 1)}>
-        count is {count}
-      </button>
+      <button onClick={() => setCount((old) => old + 1)}>count is {count}</button>
     </div>
-  );
-};
+  )
+}
