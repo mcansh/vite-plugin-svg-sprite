@@ -8,9 +8,9 @@ const packageDir = path.dirname(fileURLToPath(import.meta.url))
 const svgstoreReference = '/// <reference path="./svgstore.d.ts" />\n'
 
 async function referenceSvgstoreTypes() {
-  for (const name of ["index.d.ts", "index.d.cts"]) {
-    const file = path.join(packageDir, "dist", name)
-    const source = await readFile(file, "utf8")
+  for (let name of ["index.d.ts", "index.d.cts"]) {
+    let file = path.join(packageDir, "dist", name)
+    let source = await readFile(file, "utf8")
     if (source.startsWith(svgstoreReference)) continue
     await writeFile(file, svgstoreReference + source)
   }
