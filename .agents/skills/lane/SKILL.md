@@ -5,7 +5,7 @@ description: Use lane in this repository — create isolated worktrees, read exi
 
 # lane
 
-This repository keeps durable context / memories as Markdown under `.lane/`. 
+This repository keeps durable context / memories as Markdown under `.lane/`.
 You must read before editing a file, via `lane why <path>`, then record only the non-obvious constraints or decisions another agent would otherwise have to rediscover.
 
 ## Workflow
@@ -66,7 +66,7 @@ make verification constant-time
 Why: src/auth.rs#fn verify | early return leaks token length
 ```
 
-The form is `Why: <path>[#<anchor>] | <text>`. The path and ` | ` separator are required; omit the anchor to target the whole file. 
+The form is `Why: <path>[#<anchor>] | <text>`. The path and `|` separator are required; omit the anchor to target the whole file.
 
 Run `lane install hooks` once if trailers are not being captured.
 
@@ -84,13 +84,13 @@ Supplying text is non-interactive and defaults to `@file` when `-a` is omitted. 
 
 An anchor describes what a note is about:
 
-| anchor | matches |
-|---|---|
-| `fn verify` | a declaration by kind and name |
-| `verify` | a uniquely named declaration |
-| `#script`, `#style` | a top-level component block |
-| `## Rate limiting` | a Markdown section |
-| `@file` | the whole file |
+| anchor              | matches                        |
+| ------------------- | ------------------------------ |
+| `fn verify`         | a declaration by kind and name |
+| `verify`            | a uniquely named declaration   |
+| `#script`, `#style` | a top-level component block    |
+| `## Rate limiting`  | a Markdown section             |
+| `@file`             | the whole file                 |
 
 Run `lane anchors <path> --json` and prefer the canonical anchor it returns. Ambiguous declaration names are refused with their available choices.
 
