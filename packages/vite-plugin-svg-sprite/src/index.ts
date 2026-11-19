@@ -37,6 +37,11 @@ type ClientBuildRecord = {
   symbolIds: Array<string>;
 };
 
+type SpriteIcon = {
+  symbolId: string;
+  content: string;
+};
+
 type BuildState = {
   isServer: boolean;
   /** the sprite this build emitted, if any */
@@ -80,6 +85,18 @@ export let DEFAULT_COPY_ATTRS = [
   "stroke-dashoffset",
 ];
 
+function isClientBuildRecord(value: unknown): value is ClientBuildRecord {
+  if (typeof value !== "object" || value === null) return false;
+  let record = value as Record<string, unknown>;
+  return (
+    typeof record.root === "string" &&
+    typeof record.outDir === "string" &&
+    typeof record.spriteFileName === "string" &&
+    Array.isArray(record.symbolIds) &&
+    record.symbolIds.every((symbolId) => typeof symbolId === "string")
+  );
+}
+
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -110,8 +127,6 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
 
   // every icon seen so far, used by the dev server
   let icons = new Map<string, string>();
-  // icons imported by each environment's build, keyed by environment name
-  let environmentIcons = new Map<string, Map<string, string>>();
   // state handed from generateBundle to writeBundle, keyed by outDir
   let builds = new Map<string, BuildState>();
 
@@ -121,7 +136,6 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
 
   function getBuildTarget(environment: EnvironmentLike) {
     return {
-      name: environment?.name ?? (config.build.ssr ? "ssr" : "client"),
       isServer: environment
         ? environment.config.consumer === "server"
         : Boolean(config.build.ssr),
@@ -132,29 +146,26 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     };
   }
 
-  function getEnvironmentIcons(name: string) {
-    let result = environmentIcons.get(name);
-    if (!result) {
-      result = new Map();
-      environmentIcons.set(name, result);
-    }
-    return result;
-  }
-
   function getClientBuildRecordPath() {
     return path.join(config.cacheDir, PLUGIN_NAME, "client-build.json");
   }
 
   async function readClientBuildRecord(): Promise<ClientBuildRecord | null> {
-    let record: ClientBuildRecord;
+    let recordPath = getClientBuildRecordPath();
+    let record: unknown;
     try {
-      record = await fse.readJson(getClientBuildRecordPath());
+      record = await fse.readJson(recordPath);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
         config.logger.warn(
-          `[${PLUGIN_NAME}] ignoring unreadable ${getClientBuildRecordPath()}: ${String(error)}`,
+          `[${PLUGIN_NAME}] ignoring unreadable ${recordPath}: ${String(error)}`,
         );
       }
+      return null;
+    }
+
+    if (!isClientBuildRecord(record)) {
+      config.logger.warn(`[${PLUGIN_NAME}] ignoring invalid ${recordPath}`);
       return null;
     }
 
@@ -162,11 +173,18 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
     // still there
     if (record.root !== config.root) return null;
     let clientSprite = path.join(record.outDir, record.spriteFileName);
-    if (!(await fse.pathExists(clientSprite))) return null;
+    let spriteStat = await fse.stat(clientSprite).catch(() => null);
+    if (!spriteStat) return null;
+    if (!spriteStat.isFile()) {
+      config.logger.warn(
+        `[${PLUGIN_NAME}] ignoring invalid ${recordPath}: expected a regular file at ${clientSprite}`,
+      );
+      return null;
+    }
     return record;
   }
 
-  async function addIconToSprite(id: string) {
+  async function addIconToSprite(id: string): Promise<SpriteIcon> {
     let content = await fse.readFile(id, "utf-8");
 
     let basename = path.basename(id, ".svg");
@@ -263,20 +281,28 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
       async transform(_code, id) {
         if (svgRegex.test(id)) {
           let spriteUrl = getSpriteUrlPlaceholder();
-          let { symbolId, content } = await addIconToSprite(id);
-          let { name } = getBuildTarget(this.environment);
-          getEnvironmentIcons(name).set(symbolId, content);
+          let icon = await addIconToSprite(id);
 
           return {
-            code: js`export default "${spriteUrl}#${symbolId}";`,
+            code: js`export default "${spriteUrl}#${icon.symbolId}";`,
             map: { mappings: "" },
+            meta: { [PLUGIN_NAME]: icon },
           };
         }
       },
 
       async generateBundle(_, bundle) {
-        let { name, isServer, outDir } = getBuildTarget(this.environment);
-        let buildIcons = getEnvironmentIcons(name);
+        let { isServer, outDir } = getBuildTarget(this.environment);
+
+        let buildIcons = new Map<string, string>();
+        // The current module graph includes imports used only to register
+        // icons, even when tree shaking removes them from the output chunks.
+        for (let moduleId of this.getModuleIds()) {
+          if (!svgRegex.test(moduleId)) continue;
+          let icon: SpriteIcon | undefined =
+            this.getModuleInfo(moduleId)?.meta[PLUGIN_NAME];
+          if (icon) buildIcons.set(icon.symbolId, icon.content);
+        }
 
         // The client is built before the server, so its sprite can't contain
         // icons that are only imported by server code (e.g. in a loader). A
