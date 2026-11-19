@@ -51,8 +51,6 @@ jobs:
           pr-title: "chore: Update version for release"
           publish-script: pnpm run changeset:release
           create-github-releases: true
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   comment:
     name: 📝 Comment on issues and pull requests
