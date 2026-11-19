@@ -54,7 +54,7 @@ export default defineConfig({
 
 `symbolId` accepts `[name]` and `[hash]`. `[name]` is the SVG file name without `.svg`. `[hash]` is the SHA-512 hex digest of the module id. The plugin replaces the first `[name]` and the first `[hash]`.
 
-`svgstoreOptions` is applied on top of `{ renameDefs: true, copyAttrs: DEFAULT_COPY_ATTRS }`. `DEFAULT_COPY_ATTRS` lists `fill`, `stroke`, `stroke-width`, `stroke-linecap`, `stroke-linejoin`, `stroke-dasharray`, and `stroke-dashoffset`. If you set `copyAttrs`, your array replaces that list. Spread `DEFAULT_COPY_ATTRS` when you still want those attributes. svgstore always copies `viewBox`, `aria-labelledby`, and `role`.
+`svgstoreOptions` is applied on top of `{ renameDefs: true, copyAttrs: DEFAULT_COPY_ATTRS }`. `DEFAULT_COPY_ATTRS` lists `fill`, `stroke`, `stroke-width`, `stroke-linecap`, `stroke-linejoin`, `stroke-dasharray`, and `stroke-dashoffset`. If you set `copyAttrs`, your array replaces that list. Spread `DEFAULT_COPY_ATTRS` when you still want those attributes. svgstore always copies `viewBox`, `aria-labelledby`, and `role`. The published package ships those svgstore types, so fields such as `copyAttrs` are typed.
 
 ```ts
 import { DEFAULT_COPY_ATTRS, svgSprite } from "@mcansh/vite-plugin-svg-sprite"
