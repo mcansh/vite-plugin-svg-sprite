@@ -2,4 +2,6 @@
 "@mcansh/vite-plugin-svg-sprite": patch
 ---
 
-fix: drop icons that are no longer imported from the sprite in `vite build --watch`, and ignore a client build record that isn't a valid object instead of failing the build
+Remove icons from the sprite in `vite build --watch` when their imports are removed.
+
+SSR builds now warn and emit a standalone sprite when the cached client build record contains invalid JSON or fields, or when the cached sprite path points to a directory.
