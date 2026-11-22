@@ -339,20 +339,22 @@ test("server URLs tell apart ids that start with another icon's id", async (t) =
   await assertServerIconsAreServed(config.root, "a")
 })
 
-test("a known id doesn't claim a longer id that is completed at runtime", async (t) => {
-  let { config } = await createFixture(t, {
-    "client.js": 'import arrow from "./arrow.svg"; console.log(arrow);',
-    // what a bundler leaves after folding `spriteUrl + "#icon-arrow-" + direction`
-    "a.js": `
-      import "./arrow-left.svg";
-      export let hrefs = ["/assets/sprite.svg#icon-arrow-" + (globalThis.direction ?? "left")];
-    `,
-    "arrow.svg": svg,
-    "arrow-left.svg": svg,
+for (let separator of ["-", ".", "@", "+", ",", "한"]) {
+  test(`a known id doesn't claim a longer id continued with ${separator} at runtime`, async (t) => {
+    let { config } = await createFixture(t, {
+      "client.js": 'import arrow from "./arrow.svg"; console.log(arrow);',
+      // what a bundler leaves after folding `spriteUrl + "#icon-arrow." + direction`
+      "a.js": `
+        import "./arrow${separator}left.svg";
+        export let hrefs = ["/assets/sprite.svg#icon-arrow${separator}" + (globalThis.direction ?? "left")];
+      `,
+      "arrow.svg": svg,
+      [`arrow${separator}left.svg`]: svg,
+    })
+
+    await buildEntry(config.root, "client")
+    await buildEntry(config.root, "a")
+
+    await assertServerIconsAreServed(config.root, "a")
   })
-
-  await buildEntry(config.root, "client")
-  await buildEntry(config.root, "a")
-
-  await assertServerIconsAreServed(config.root, "a")
-})
+}

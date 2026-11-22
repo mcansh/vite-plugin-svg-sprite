@@ -104,6 +104,10 @@ function isClientBuildRecord(value: unknown): value is ClientBuildRecord {
 }
 /* oxlint-enable anti-slop/no-unknown-parameters, anti-slop/no-runtime-typeof */
 
+// what an id that isn't known can contain. A known id only matches where an unknown one would
+// end, so it can't claim the start of a longer id that is completed at runtime.
+const unknownIdCharacter = /[^"'`\s\\)]/
+
 /**
  * Reads the symbol id of the `#symbolId` at `index`. Ids come from file names, so they can contain
  * any character: look for the known ids first, longest first, and only guess where an unknown id
@@ -120,10 +124,12 @@ function readSymbolId(
   let start = index + 1
   for (let length of knownIdLengths) {
     let symbolId = content.slice(start, start + length)
-    if (knownIds.has(symbolId) && !/[\w-]/.test(content.charAt(start + length))) return symbolId
+    if (knownIds.has(symbolId) && !unknownIdCharacter.test(content.charAt(start + length))) {
+      return symbolId
+    }
   }
 
-  let unknownId = /[^"'`\s\\)]+/y
+  let unknownId = new RegExp(`${unknownIdCharacter.source}+`, "y")
   unknownId.lastIndex = start
   return unknownId.exec(content)?.[0]
 }
