@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto"
 import path from "node:path"
 
 import fse from "fs-extra"
@@ -103,8 +104,28 @@ function isClientBuildRecord(value: unknown): value is ClientBuildRecord {
 }
 /* oxlint-enable anti-slop/no-unknown-parameters, anti-slop/no-runtime-typeof */
 
-function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+/**
+ * Reads the symbol id of the `#symbolId` at `index`. Ids come from file names, so they can contain
+ * any character: look for the known ids first, longest first, and only guess where an unknown id
+ * ends.
+ */
+function readSymbolId(
+  content: string,
+  index: number,
+  knownIds: Set<string>,
+  knownIdLengths: Array<number>,
+) {
+  if (content[index] !== "#") return undefined
+
+  let start = index + 1
+  for (let length of knownIdLengths) {
+    let symbolId = content.slice(start, start + length)
+    if (knownIds.has(symbolId) && !/[\w-]/.test(content.charAt(start + length))) return symbolId
+  }
+
+  let unknownId = /[^"'`\s\\)]+/y
+  unknownId.lastIndex = start
+  return unknownId.exec(content)?.[0]
 }
 
 export function svgSprite(configOptions?: Config): Array<Plugin> {
@@ -231,16 +252,20 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
    * Replaces the sprite url placeholder (with or without a `#symbolId`) with
    * the file name returned by `resolveFileName`.
    */
-  function createSpriteUrlRewriter(resolveFileName: (symbolId: string | undefined) => string) {
-    let regex = new RegExp(
-      escapeRegExp(getSpriteUrlPlaceholder()) + "(?:#([^\"'`\\s\\\\)]+))?",
-      "g",
+  function createSpriteUrlRewriter(
+    knownIds: Set<string>,
+    resolveFileName: (symbolId: string | undefined) => string,
+  ) {
+    let placeholder = getSpriteUrlPlaceholder()
+    let knownIdLengths = Array.from(new Set(Array.from(knownIds, (id) => id.length))).sort(
+      (a, b) => b - a,
     )
 
+    // only the url is replaced, whatever follows it is left as written
     return (content: string) =>
-      content.replace(regex, (_match, symbolId?: string) => {
-        let url = `/${resolveFileName(symbolId)}`
-        return symbolId ? `${url}#${symbolId}` : url
+      content.replaceAll(placeholder, (url: string, index: number) => {
+        let symbolId = readSymbolId(content, index + url.length, knownIds, knownIdLengths)
+        return `/${resolveFileName(symbolId)}`
       })
   }
 
@@ -320,7 +345,8 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
           spriteFileName = this.getFileName(referenceId)
         }
 
-        let rewrite = createSpriteUrlRewriter((symbolId) => {
+        let knownIds = new Set([...buildIcons.keys(), ...clientSymbolIds])
+        let rewrite = createSpriteUrlRewriter(knownIds, (symbolId) => {
           if (
             clientBuild &&
             (!spriteFileName || symbolId === undefined || clientSymbolIds.has(symbolId))
@@ -393,10 +419,19 @@ export function svgSprite(configOptions?: Config): Array<Plugin> {
         if (build.clientBuild && build.spriteFileName) {
           let target = path.join(build.clientBuild.outDir, build.spriteFileName)
           if (!(await fse.pathExists(target))) {
-            let temp = `${target}.${process.pid}-${Date.now()}.tmp`
-            await fse.copy(path.join(outDir, build.spriteFileName), temp)
-            await fse.move(temp, target, { overwrite: true })
-            this.debug(`copied ${build.spriteFileName} to the client build`)
+            let temp = `${target}.${randomUUID()}.tmp`
+            try {
+              await fse.copy(path.join(outDir, build.spriteFileName), temp)
+              // not fse.move, which deletes the target before replacing it
+              await fse.rename(temp, target)
+              this.debug(`copied ${build.spriteFileName} to the client build`)
+            } catch (error) {
+              // Windows can refuse to replace a file another build just put
+              // there, which is fine because it has the same content
+              if (!(await fse.pathExists(target))) throw error
+            } finally {
+              await fse.remove(temp)
+            }
           }
         }
       },
