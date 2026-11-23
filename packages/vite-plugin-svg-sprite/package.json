@@ -48,7 +48,7 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsc --watch",
-    "test": "node --test",
+    "test": "node --import ./register-node-tsx.js --test src/index.test.ts",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
@@ -57,6 +57,7 @@
     "svgstore": "^3.0.1"
   },
   "devDependencies": {
+    "@remix-run/node-tsx": "^1.0.0",
     "@types/fs-extra": "^11.0.4",
     "vite": "^8.3.8"
   },

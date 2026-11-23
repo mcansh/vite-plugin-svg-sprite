@@ -49,9 +49,11 @@ jobs:
         if: matrix.node == '18.0.0'
         run: pnpm exec tsc --project tests/compat/tsconfig.json
 
+      # Vite 8 needs Node 20.19 or newer, so the Node 18 jobs skip these tests.
+      # The matrix Node runs them. setup-toolchain's Node is always 24.
       - name: Run unit tests
-        if: matrix.node == '24'
-        run: pnpm test
+        if: matrix.node == '20' || matrix.node == '22' || matrix.node == '24'
+        run: bash tests/run-unit.sh "${{ matrix.node }}"
 
       - name: Build the plugin
         run: pnpm --filter @mcansh/vite-plugin-svg-sprite build

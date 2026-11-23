@@ -16,9 +16,9 @@ esac
 
 fixture="$(mktemp -d "${TMPDIR:-/tmp}/svg-sprite-compat.XXXXXX")"
 trap 'rm -rf "$fixture"' EXIT
-printf '%s\n' "$node_version" > "$fixture/.node-version"
-nub node install "$node_version"
-node_binary="$(env -u NODE_EXECUTABLE nub --cwd "$fixture" node which)"
+# shellcheck source=tests/node-bin.sh
+source "$PWD/tests/node-bin.sh"
+node_binary="$(node_bin_for "$node_version")"
 case "$("$node_binary" --version)" in
   "v$node_version"|"v$node_version".*) ;;
   *) echo "Expected Node $node_version" >&2; exit 1 ;;
