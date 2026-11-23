@@ -35,4 +35,4 @@ pnpm test
 pnpm typecheck
 ```
 
-`start` runs `server.ts`, which listens with `remix/node-fetch-server` on `PORT` (default `4477`) after `pnpm build`. Tests render the router with `node --import remix/node-tsx --test`. A small loader stands in for Vite's SVG import while those tests run.
+`start` runs `node --import remix/node-tsx ./server.ts`. That process listens with `remix/node-fetch-server` on `PORT` (default `4477`) and loads the handler `pnpm build` emitted. Tests use `node --import remix/node-tsx --test`. A small hook stands in for Vite's SVG import while those tests render the page.

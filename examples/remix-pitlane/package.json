@@ -10,8 +10,8 @@
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "node server.ts",
-    "test": "node --import remix/node-tsx --import ./svg-module.js --test",
+    "start": "node --import remix/node-tsx ./server.ts",
+    "test": "node --import remix/node-tsx --test",
     "typecheck": "tsc",
     "format": "oxfmt --write",
     "lint": "oxlint --fix"

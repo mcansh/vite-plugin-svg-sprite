@@ -15,7 +15,7 @@ pnpm format
 pnpm lint
 ```
 
-`dev`, `build`, and `preview` go through Vite and Pitlane. `start` serves the built fetch handler with Node.
+`dev`, `build`, and `preview` go through Vite and Pitlane. `start` serves the built fetch handler with `node --import remix/node-tsx ./server.ts`.
 
 ## Layout
 
