@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "jsx": "react-jsx",
+    "jsxImportSource": "remix/component",
+    "types": ["node", "vite/client", "@mcansh/vite-plugin-svg-sprite/client"],
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true
+    // `#app/*.ts` imports are not relative, so they are not rewritten on emit.
+    // Vite and `remix/node-tsx` load the TypeScript source directly.
+  },
+  "include": ["**/*.ts", "**/*.tsx", "server.ts"],
+  "exclude": ["dist"]
+}

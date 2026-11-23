@@ -35,6 +35,9 @@ jobs:
       - name: Build packages and examples
         run: pnpm run build
 
+      - name: Type-check the Remix Pitlane example
+        run: pnpm --filter remix-pitlane typecheck
+
       - name: Publish preview
         if: >-
           github.repository == 'mcansh/vite-plugin-svg-sprite' &&

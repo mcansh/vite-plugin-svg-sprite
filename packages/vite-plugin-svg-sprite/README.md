@@ -127,3 +127,9 @@ The record stores the project root, the client output directory, the emitted spr
 - The server build does not change client files or the client sprite.
 
 The plugin uses the record only when the JSON has the expected fields, the root matches this project, and the recorded sprite is still a file. A new client build deletes the previous record at the start of the build, then writes a new record. The plugin ignores an unreadable or invalid record and logs a warning.
+
+## Examples
+
+`examples/remix-pitlane` is a Node app on Remix 3.2.0, Vite 8, and Pitlane `1.0.0-alpha.2`. Pitlane's Remix plugin serves the fetch handler, and this plugin turns SVG imports into sprite `<use href>` URLs on the server page and in a client component. See `examples/remix-pitlane/README.md`.
+
+The other apps under `examples/` are a Vite app, a React Router app, and a Remix 2 app.

@@ -58,6 +58,15 @@ jobs:
       - name: Build the plugin
         run: pnpm --filter @mcansh/vite-plugin-svg-sprite build
 
+      # The Remix 3 example needs Vite 8 and the toolchain Node (24).
+      - name: Type-check the Remix Pitlane example
+        if: matrix.node == '24'
+        run: pnpm --filter remix-pitlane typecheck
+
+      - name: Build the Remix Pitlane example
+        if: matrix.node == '24'
+        run: pnpm --filter remix-pitlane build
+
       - name: Test the packed plugin
         env:
           TEST_NODE: ${{ matrix.node }}
