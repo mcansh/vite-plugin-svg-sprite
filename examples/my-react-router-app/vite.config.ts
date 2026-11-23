@@ -7,6 +7,7 @@ import inspect from "vite-plugin-inspect"
 export default defineConfig({
   build: {
     outDir: "build",
+    minify: false,
   },
   resolve: {
     tsconfigPaths: true,

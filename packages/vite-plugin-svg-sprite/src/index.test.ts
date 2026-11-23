@@ -220,6 +220,58 @@ function buildEntry(root: string, name: string) {
   })
 }
 
+test("split client loaders return URLs for icons in the client sprite", async (t) => {
+  let { config } = await createFixture(t, {
+    "entry.js": `
+      export async function loadIcons(args) {
+        let { clientLoader } = await import("./client-loader.js");
+        return clientLoader(args);
+      }
+    `,
+    "client-loader.js": `
+      import icon from "./client-only.svg";
+      export async function clientLoader({ serverLoader }) {
+        return [...await serverLoader(), icon];
+      }
+    `,
+    "a.js": 'import icon from "./server-only.svg"; export let hrefs = [icon];',
+    "client-only.svg": svg,
+    "server-only.svg": svg,
+  })
+
+  await build({
+    ...config,
+    build: {
+      outDir: "dist/client",
+      modulePreload: false,
+      rollupOptions: {
+        ...config.build.rollupOptions,
+        preserveEntrySignatures: "strict",
+        output: { entryFileNames: "client.mjs", chunkFileNames: "[name]-[hash].mjs" },
+      },
+    },
+  })
+  await buildEntry(config.root, "a")
+
+  let { hrefs: serverIcons } = await import(
+    pathToFileURL(path.join(config.root, "dist/a/a.mjs")).href
+  )
+  let { loadIcons } = await import(
+    pathToFileURL(path.join(config.root, "dist/client/client.mjs")).href
+  )
+  let hrefs = await loadIcons({ serverLoader: async () => serverIcons })
+
+  assert.equal(hrefs.length, 2)
+  assert.equal(hrefs[0], serverIcons[0])
+  assert.match(hrefs[1], /#icon-client-only$/)
+  for (let href of hrefs) {
+    let [url, symbolId] = href.split("#")
+    assert.notEqual(url, "/assets/sprite.svg")
+    let sprite = await fsp.readFile(path.join(config.root, "dist/client", url), "utf8")
+    assert.ok(sprite.includes(`id="${symbolId}"`), `${url} has no symbol ${symbolId}`)
+  }
+})
+
 async function assertServerIconsAreServed(root: string, name: string) {
   let { hrefs } = await import(pathToFileURL(path.join(root, `dist/${name}/${name}.mjs`)).href)
 

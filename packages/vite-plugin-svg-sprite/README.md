@@ -39,6 +39,29 @@ export default defineConfig({
 })
 ```
 
+### Use icons in a client loader
+
+SVG imports used by `clientLoader` are included in the client sprite, including when React Router splits the loader into a separate chunk. No extra plugin configuration is required.
+
+Call and await `serverLoader()` to combine server icons with client icons. Return the same data shape your route component expects.
+
+```tsx
+import type { Route } from "./+types/home"
+import clientIconHref from "./client-icon.svg"
+import serverIconHref from "./server-icon.svg"
+
+export function loader() {
+  return [serverIconHref]
+}
+
+export async function clientLoader({ serverLoader }: Route.ClientLoaderArgs) {
+  let serverIcons = await serverLoader()
+  return [...serverIcons, clientIconHref]
+}
+```
+
+By default, `clientLoader` runs on client navigations. To run it during initial hydration, set `clientLoader.hydrate = true as const` and export a `HydrateFallback` component. See [React Router's client data guide](https://reactrouter.com/how-to/client-data).
+
 ## Set the options
 
 `svgSprite` accepts these options.
