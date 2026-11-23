@@ -9,7 +9,7 @@
     "publish": "./scripts/publish.js",
     "format": "oxfmt",
     "lint": "oxlint --fix",
-    "test": "pnpm --recursive --filter \"./packages/**\" run test"
+    "test": "pnpm --recursive --filter \"./packages/**\" --filter remix-pitlane run test"
   },
   "dependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
