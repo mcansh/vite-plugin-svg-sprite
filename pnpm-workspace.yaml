@@ -1,6 +1,7 @@
 packages:
   - packages/*
   - examples/*
+  - tests/compat
 
 allowBuilds:
   "@swc/core": true
@@ -17,7 +18,6 @@ overrides:
   "@remix-run/dev>cacache": "^21.0.2"
   "@remix-run/dev>minimatch": "^11.0.9"
   "@remix-run/dev>remark-mdx-frontmatter": "^6.0.0"
-  "@typescript-eslint/typescript-estree>minimatch": "^11.0.9"
   "esbuild@<0.25.0": "^0.25.12"
 
   # Keep the Remix v2 router packages aligned with the v6 security backport.

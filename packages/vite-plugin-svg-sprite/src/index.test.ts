@@ -169,9 +169,14 @@ test(
       "kept.svg": svg,
       "added.svg": svg,
     })
+    // SAFETY: Vite 8.3 reads build.watch.chokidar and overwrites watch.watcher
+    // with it. Rolldown's WatcherOptions type does not declare chokidar.
+    let watch = {
+      chokidar: { usePolling: true },
+    } as NonNullable<NonNullable<InlineConfig["build"]>["watch"]>
     let watcher = await build({
       ...config,
-      build: { ...config.build, watch: { chokidar: { usePolling: true } } },
+      build: { ...config.build, watch },
     })
     assert.ok("on" in watcher, "Expected a Vite build watcher")
     t.after(() => watcher.close())
