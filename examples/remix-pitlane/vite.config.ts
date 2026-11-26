@@ -10,6 +10,6 @@ export default defineConfig({
     }),
     svgSprite(),
   ],
-  server: { port: 4477, strictPort: true },
-  preview: { port: 4477, strictPort: true },
+  server: { port: 44100 },
+  preview: { port: 44100 },
 })
