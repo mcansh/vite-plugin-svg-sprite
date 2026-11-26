@@ -7,7 +7,6 @@ import { getPackagesSync } from "@manypkg/get-packages"
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url))
 const rootDir = path.join(__dirname, "..")
 
-const DRY_RUN = false
 // pre-release headings look like: "1.15.0-pre.2"
 const PRE_RELEASE_HEADING_REGEXP = /^\d+\.\d+\.\d+-pre\.\d+$/i
 // stable headings look like: "1.15.0"
@@ -65,11 +64,7 @@ async function removePreReleaseChangelogs() {
           })
         }
 
-        if (DRY_RUN) {
-          console.log("FILE CONTENTS:\n\n" + changelogFileContents)
-        } else {
-          await fs.promises.writeFile(changelogPath, changelogFileContents, "utf-8")
-        }
+        await fs.promises.writeFile(changelogPath, changelogFileContents, "utf-8")
       })(),
     )
   }
@@ -77,12 +72,8 @@ async function removePreReleaseChangelogs() {
 }
 
 function isPrereleaseMode() {
-  try {
-    let prereleaseFilePath = path.join(rootDir, ".changeset", "pre.json")
-    return fs.existsSync(prereleaseFilePath)
-  } catch (err) {
-    return false
-  }
+  let prereleaseFilePath = path.join(rootDir, ".changeset", "pre.json")
+  return fs.existsSync(prereleaseFilePath)
 }
 
 /**

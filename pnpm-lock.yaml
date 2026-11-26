@@ -208,24 +208,15 @@ importers:
       '@total-typescript/tsconfig':
         specifier: ^1.0.4
         version: 1.0.4
-      '@types/jsonfile':
-        specifier: ^6.1.4
-        version: 6.1.4
       '@types/node':
         specifier: ^24.19.2
         version: 24.19.2
       '@types/npmcli__package-json':
         specifier: ^4.0.4
         version: 4.0.4
-      chalk:
-        specifier: ^6.0.1
-        version: 6.0.1
       glob:
         specifier: ^14.0.2
         version: 14.0.6
-      jsonfile:
-        specifier: ^6.2.1
-        version: 6.2.1
       oxfmt:
         specifier: ^0.79.0
         version: 0.79.0
@@ -244,15 +235,9 @@ importers:
       tsdown:
         specifier: ^0.23.7
         version: 0.23.7(@arethetypeswrong/core@0.18.5)(publint@0.3.25)(typescript@7.0.2)
-      type-fest:
-        specifier: ^6.0.2
-        version: 6.0.2
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
-      verkit:
-        specifier: ^0.5.0
-        version: 0.5.0
 
   examples/basic-vite:
     dependencies:
@@ -2698,10 +2683,6 @@ packages:
     resolution: {integrity: sha512-zgVZuo2WcZgfUEmsn6eO3kINexW8RAE4maiQ8QNs8CtpPCSyMiYsULR3HQYkm3w8FIA3SberyMJMSldGsW+U3w==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
 
-  chalk@6.0.1:
-    resolution: {integrity: sha512-/Ce6KNm3vIbWdMlNna6RVIZ/ICQxnJxCicet5LBKK9ZffBkqzDw0xh9EiKSljdRtiIQ1S1z4YgcscUUGzNCWrA==}
-    engines: {node: '>=22'}
-
   char-regex@1.0.2:
     resolution: {integrity: sha512-kWWXztvZ5SBQV+eRgKFeh8q5sLuZY2+8WUIzlxWVTg+oGwY14qylx1KbKzHd8P6ZYkAg0xyIDU9JMHhyJMZ1jw==}
     engines: {node: '>=10'}
@@ -4826,10 +4807,6 @@ packages:
     resolution: {integrity: sha512-nL6WTxYnsVl3e0G/mwGEFSnPAWUrzIwHAPOwInD4QUuLDKxaKMnXduf0Ipw3m/g9AldPhp1Y8E/nkReFBukJrA==}
     engines: {node: '>= 12'}
 
-  tagged-tag@1.0.0:
-    resolution: {integrity: sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==}
-    engines: {node: '>=20'}
-
   tailwind-merge@3.7.0:
     resolution: {integrity: sha512-XPPUyAc+cvspz3lHTcR/QgPfW2A0lv/xQNIjX3HGhLR+Nq2lHaLq5MtTesHn8GUr3W3DguT2KT5x3NVgRtYwmA==}
 
@@ -4948,10 +4925,6 @@ packages:
 
   turbo-stream@2.4.1:
     resolution: {integrity: sha512-v8kOJXpG3WoTN/+at8vK7erSzo6nW6CIaeOvNOkHQVDajfz1ZVeSxCbc6tOH4hrGZW7VUCV0TOXd8CPzYnYkrw==}
-
-  type-fest@6.0.2:
-    resolution: {integrity: sha512-eVBdZcUsT0GbeVcuMHJG4qiZeHF7ANdJtzMtAD+r94rw7PQZ4zAK43ik+jZZ6woURQA6QIz6Kz5uv0HbMs0AQQ==}
-    engines: {node: '>=22'}
 
   type-is@1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
@@ -7340,8 +7313,6 @@ snapshots:
       supports-color: 7.2.0
 
   chalk@5.4.1: {}
-
-  chalk@6.0.1: {}
 
   char-regex@1.0.2: {}
 
@@ -9817,8 +9788,6 @@ snapshots:
     dependencies:
       cheerio: 1.0.0-rc.10
 
-  tagged-tag@1.0.0: {}
-
   tailwind-merge@3.7.0: {}
 
   tailwindcss@4.3.5: {}
@@ -9922,10 +9891,6 @@ snapshots:
   tslib@2.6.2: {}
 
   turbo-stream@2.4.1: {}
-
-  type-fest@6.0.2:
-    dependencies:
-      tagged-tag: 1.0.0
 
   type-is@1.6.18:
     dependencies:
