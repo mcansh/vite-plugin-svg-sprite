@@ -9,8 +9,6 @@ import { Icon } from "~/icon.tsx"
 
 import type { Route } from "./+types/home"
 
-export { HydrateFallback } from "~/hydrate-fallback.tsx"
-
 const CLIENT_ICONS = [
   archiveBoxArrowDownIconHref,
   beakerIconHref,
@@ -18,8 +16,8 @@ const CLIENT_ICONS = [
   houseIconHref,
 ] as const
 
-export async function clientLoader({ serverLoader }: Route.ClientLoaderArgs) {
-  let serverIcons = await serverLoader()
+export async function clientLoader(ctx: Route.ClientLoaderArgs) {
+  let serverIcons = await ctx.serverLoader()
   return [...serverIcons, wrenchIconHref]
 }
 
