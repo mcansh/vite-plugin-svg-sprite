@@ -4,8 +4,9 @@ export default {
   // Config options...
   // Server-side render by default, to enable SPA mode set this to `false`
   ssr: true,
-  splitRouteModules: true,
+  splitRouteModules: "enforce",
   future: {
     unstable_optimizeDeps: true,
+    unstable_enableNodeReadableStream: true,
   },
 } satisfies Config
